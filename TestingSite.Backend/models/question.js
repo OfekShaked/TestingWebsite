@@ -14,6 +14,7 @@ const QuestionSchema = new mongoose.Schema({
 	text:{
         type: String,
         required:true,
+        default:'',
     },
     inner_text:{
         type:String,
@@ -42,10 +43,23 @@ const QuestionSchema = new mongoose.Schema({
         default:false,
     },
     updated_at: { 
-        type: Date 
+        type: Date,
+        default: Date.now()
     },
+    number_of_tests:{
+        type:Number,
+        default:0,
+        required:true,
+        min:0,
+    }
 }, { collection: 'questions' })
 
 QuestionSchema.plugin(timestamps)
+
+QuestionSchema.pre('findOneAndUpdate',function(next){
+    let update = {...this.getUpdate()};
+    update.updated_at = Date.now();
+    next();
+});
 
 module.exports = exports = mongoose.model('Question', QuestionSchema)
