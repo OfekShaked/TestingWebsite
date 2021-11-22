@@ -1,0 +1,7 @@
+.centerize{
+    width:60vw;
+}
+.center-typography{
+    flex-grow:1;
+    text-align:center;
+}

@@ -35,6 +35,18 @@ class QuestionService {
           new: true,
       })
   }
+  increment_test_count = async(question_id) =>{
+      return await QuestionModel.findByIdAndUpdate(question_id,{$inc: {number_of_tests:1}},{
+        overwrite: true,
+        new: true,
+    });
+  }
+  decrement_test_count = async(question_id) =>{
+    return await QuestionModel.findByIdAndUpdate(question_id,{$inc: {number_of_tests: -1}},{
+      overwrite: true,
+      new: true,
+  });
+}
 }
 /**
  * 

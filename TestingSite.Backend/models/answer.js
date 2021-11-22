@@ -5,6 +5,7 @@ const AnswerSchema = new mongoose.Schema({
 	text: {
 		type: String,
 		required: true,
+        default:"",
 	},
     is_correct:{
         type: Boolean,
