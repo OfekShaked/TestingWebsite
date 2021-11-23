@@ -7,7 +7,7 @@ class TestService {
      * @returns Array array of all tests
      */
   get_all_tests = async () => {
-    return await TestModel.find({});
+    return await TestModel.find({}).populate('topic_id').populate('questions');
   };
   /**
    * 
@@ -18,9 +18,11 @@ class TestService {
       const model = populate_test(question);
       const validatedModel = model.validateSync();
       if(!!validatedModel) return null;
-      const test_model = await TestModel.create(model);
-      await increment_test_question_count(test_model.questions);
-      return test_model;
+      const test_added = await TestModel.create(model);
+      await increment_test_question_count(test_added.questions);
+      await TestModel.populate(test_added,'topic_id');
+      await TestModel.populate(test_added,'questions');
+      return test_added;
   }
   /**
    * Update existing test
@@ -28,14 +30,15 @@ class TestService {
    * @returns Updated test if success, null if failed
    */
   update_test = async (test) =>{
+      const test_id = test._id;
+      delete test._id;
       const model = new TestModel(test);
       const validatedModel = model.validateSync();
       if(!!validatedModel) return null;
-      await decrement_previous_questions_tests(test._id);
-      const test_model = await TestModel.findByIdAndUpdate(test._id,model,{
-          overwrite: true,
+      await decrement_previous_questions_tests(test_id);
+      const test_model = await TestModel.findByIdAndUpdate(test_id,model,{
           new: true,
-      });
+      }).populate('topic_id').populate('questions');
       await increment_test_question_count(test_model.questions);
       return test_model;
   }
