@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const logger = require('./logger');
+const logger = require('../logger');
 
 class Database { // Singleton
   connection = mongoose.connection;

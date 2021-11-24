@@ -4,7 +4,7 @@ const controller = require("../BLL/controllers/topic_controller");
 const asyncHandler = require("../helpers/asyncHandler");
 
 router.get(
-    "/topics",
+    "/",
     asyncHandler(async (req, res) => {
     try{
       const data = await controller.get_all_topics();

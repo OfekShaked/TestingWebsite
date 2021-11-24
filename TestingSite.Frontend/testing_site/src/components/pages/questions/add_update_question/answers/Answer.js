@@ -17,10 +17,10 @@ const Answer = (props)=>{
 
     return(
         <Stack direction="row" spacing={2}>
-            <IconButton color='primary' aria-label="remove answer" component='span'>
-                <RemoveCircleIcon onClick={()=>removeAnswer(answer._id)}/>
+            <IconButton color='primary' onClick={()=>removeAnswer(answer._id)} aria-label="remove answer" component='span'>
+                <RemoveCircleIcon />
             </IconButton>
-            <TextEditor label="Answer text" value={answerText} setValue={setAnswerText}/>
+            <TextEditor value={answerText} setValue={setAnswerText}/>
             <FormGroup>
                 <FormControlLabel control={<Switch defaultChecked {...isCorrect}/>} label={isCorrect.value?"Correct":"Incorrect"} />
             </FormGroup>

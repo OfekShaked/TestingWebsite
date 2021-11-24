@@ -29,6 +29,7 @@ router.post(
   })
 );
 
+//update a question
 router.put(
   "/questions",
   asyncHandler(async (req, res) => {

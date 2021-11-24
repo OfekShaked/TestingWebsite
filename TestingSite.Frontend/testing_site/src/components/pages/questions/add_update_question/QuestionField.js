@@ -1,11 +1,13 @@
 import React from 'react';
-import {Typography} from '@mui/material'
+import {Typography,Stack} from '@mui/material'
 
 const QuestionField = (props) =>{
 
-    return(<>
-        <Typography inline>{props.field}: </Typography><Typography inline>{props.children}</Typography>
-        </>
+    return(
+        <Stack direction="row">
+        <Typography inline>{props.field}: </Typography>
+        <Typography inline>{props.children}</Typography>
+        </Stack>
     );
 }
 export default QuestionField;

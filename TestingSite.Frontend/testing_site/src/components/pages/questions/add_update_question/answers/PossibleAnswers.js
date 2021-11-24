@@ -50,14 +50,12 @@ const PossibleAnswers = (props) =>{
     },[question])
 
     return(
-        <>
-        <Stack spacing={2}>
-        {question.answers.map((answer, index)=>{
-            return <Answer key={index} updateAnswer={updateAnswer} answer={answer} removeAnswer={removeAnswer} is_change_allowed={is_correct_change_allowed}></Answer>
-        })}
-        <Button variant="contained" onClick={addAnswer}>Add Answer</Button>
+            <Stack spacing={2}>
+            {question.answers.map((answer, index)=>{
+                return <Answer key={index} updateAnswer={updateAnswer} answer={answer} removeAnswer={removeAnswer} is_change_allowed={is_correct_change_allowed}></Answer>
+            })}
+            <Button variant="contained" onClick={addAnswer}>Add Answer</Button>
         </Stack>
-        </>
     )
 }
 export default PossibleAnswers;

@@ -1,13 +1,27 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect,useContext} from 'react';
 import {Paper, MenuList, MenuItem,Select,FormControl, InputLabel,Divider,Typography} from '@mui/material'
 import './MainPage.css'
+import useSelect from '../../../hooks/useSelectValue/useSelect';
+import axios from 'axios';
+import {Link} from 'react-router-dom';
+import {TopicContext} from '../../../contexts/TopicContext';
 
 const MainPage = () =>{
-    const [topic,setTopic] = useState("")
+    const [topic, setTopic] = useState("")
+    const [topics,setTopics] = useState([]);
+    const topicContext = useContext(TopicContext);
 
-    const handleChange = (event) =>{
-        setTopic(event.target.value);
+    const handleChange = (event) => {
+        setTopic(event.target.value)
+        topicContext.setTopic(topics.find(top=>top._id===event.target.value));
     }
+
+    useEffect(()=>{
+        const asyncHandler = async() =>{
+            setTopics(await getTopics());
+        }
+        asyncHandler();
+    },[])
     return (
         <Paper className="centerize">
             <FormControl fullWidth variant="filled">
@@ -16,16 +30,16 @@ const MainPage = () =>{
                 labelId="topic-select-label"
                 id="topic-select"
                 value={topic}
-                inChange={handleChange}
+                onChange={handleChange}
             >
-                <MenuItem value={10}><Typography className="center-typography">Ten</Typography></MenuItem>
-                <MenuItem value={20}><Typography className="center-typography">Twenty</Typography></MenuItem>
-                <MenuItem value={30}><Typography className="center-typography">Thirty</Typography></MenuItem>
+                {topics.map((topic)=>{
+                    return <MenuItem key={topic._id} value={topic._id}><Typography className="center-typography">{topic.name}</Typography></MenuItem>
+                })}
             </Select>
             </FormControl>
             <Paper>
         <MenuList>
-          <MenuItem><Typography className="center-typography">Manage questions {'>>'}</Typography></MenuItem>
+          <MenuItem component={Link} to="/questions/manage"><Typography className="center-typography">Manage questions {'>>'}</Typography></MenuItem>
           <Divider />
           <MenuItem><Typography className="center-typography">Manage tests {'>>'}</Typography></MenuItem>
           <Divider />
@@ -34,5 +48,14 @@ const MainPage = () =>{
       </Paper>
         </Paper>
     )
+}
+
+const getTopics = async () =>{
+    /**
+     * get topics from the servers
+     * Returns array of topics
+     */
+    const res = await axios.get("Topics");
+    return res.data;
 }
 export default MainPage;

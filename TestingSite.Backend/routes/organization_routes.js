@@ -4,7 +4,7 @@ const controller = require("../BLL/controllers/organization_controller");
 const asyncHandler = require("../helpers/asyncHandler");
 
 router.get(
-    "/organizations",
+    "/",
     asyncHandler(async (req, res) => {
     try{
       const data = await controller.get_all_organizations();
