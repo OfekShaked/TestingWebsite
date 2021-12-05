@@ -53,6 +53,10 @@ const TestSchema = new mongoose.Schema({
 		lowercase: true,
 		required: true,
     },
+    updated_at: { 
+        type: Date,
+        default: Date.now()
+    },
     email_success_content:{
         type: String,
     },
@@ -62,5 +66,10 @@ const TestSchema = new mongoose.Schema({
 }, { collection: 'tests' })
 
 TestSchema.plugin(timestamps)
+TestSchema.pre('findOneAndUpdate',function(next){
+    let update = {...this.getUpdate()};
+    update.updated_at = Date.now();
+    next();
+});
 
 module.exports = exports = mongoose.model('Test', TestSchema)

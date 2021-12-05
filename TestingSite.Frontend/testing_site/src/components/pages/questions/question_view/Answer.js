@@ -10,6 +10,7 @@ const Answer = (props) => {
         //handles what happens when checkbox is clicked
         props.handleChangeAnswer(answer._id,event.target.checked)
     }
+
     useEffect(()=>{
         //update checked state based on chosen answers array
         if(testTakenQuestion.answers_chosen.includes(answer._id)){
@@ -19,6 +20,7 @@ const Answer = (props) => {
             setIsChecked(false);
         }
     },[testTakenQuestion])
+    
   return (
     <FormControlLabel
       control={

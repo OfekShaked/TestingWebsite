@@ -1,14 +1,14 @@
 import React,{ useState,useEffect} from 'react';
 import {Stack,IconButton,FormGroup,FormControlLabel,Checkbox} from '@mui/material'
-import TextEditor from '../TextEditor';
+import TextEditor from '../../../../common/text_editor/TextEditor';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import useTextEditor from '../../../../../hooks/useTextEditor/useTextEditor';
 
 const Answer = (props)=>{
     const {answer,handleIsCorrectChange, removeAnswer,updateAnswer} = props;
     const [answerText,setAnswerText,answerTextEditor,setAnswerTextEditor] = useTextEditor(answer.text===""?null:answer.text)
-    const [isChecked,setIsChecked] = useState(answer.is_correct);
     const handleSwitchChange = () =>{
+        //handle what happens when switch state changes
         handleIsCorrectChange(answer.front_id);
     }
 
@@ -18,10 +18,7 @@ const Answer = (props)=>{
         updateAnswer(answersModified);
     },[answerText])
 
-    useEffect(()=>{
-        setIsChecked(answer.is_correct);
-        console.log(answer.is_correct);
-    },[answer])
+
 
 
     return(

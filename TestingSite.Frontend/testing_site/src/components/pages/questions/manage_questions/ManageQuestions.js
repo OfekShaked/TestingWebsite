@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Paper, Typography } from "@mui/material";
 import CommonTable from "../../../common/table/CommonTable";
 import QuestionTextOverFlow from "./column_renders/question_text_and_tag/QuestionTextOverFlow";
-import ActionButton from "./column_renders/action_button/ActionButton";
+import ActionButton from "../../../common/action_button/ActionButton";
 import "./ManageQuestions.css";
 import Actions from "./Actions";
 import { TopicContext } from "../../../../contexts/TopicContext";
@@ -19,6 +19,7 @@ const ManageQuestions = () => {
   const [questions, setQuestions] = useState([]);
   const [questionSelected,setQuestionSelected] = useState(null);
   const [questionOpen,handleQuestionOpen,handleQuestionClose] = useModal();
+
   useEffect(() => {
     const asyncFunc = async() => {
       //get all questions and set them in the table
@@ -33,6 +34,7 @@ const ManageQuestions = () => {
     };
     asyncFunc();
   }, []);
+
   const columns = [
     { field: "_id", headerName: "ID", flex: 1 },
     {
@@ -72,11 +74,14 @@ const ManageQuestions = () => {
     },
     { field: "is_active", headerName: "Is Active", type: "boolean", flex: 1 },
   ];
+
   const editQuestion = (row) => {
+    //navigate to edit question
     navigate(`/questions/modify/${row._id}`);
   };
   
   const showQuestion = (row) => {
+    //show question chosen
     setQuestionSelected(row);
     handleQuestionOpen();
   };

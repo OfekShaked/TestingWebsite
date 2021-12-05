@@ -41,7 +41,7 @@ const MainPage = () =>{
         <MenuList>
           <MenuItem component={Link} to="/questions/manage"><Typography className="center-typography">Manage questions {'>>'}</Typography></MenuItem>
           <Divider />
-          <MenuItem><Typography className="center-typography">Manage tests {'>>'}</Typography></MenuItem>
+          <MenuItem component={Link} to="/tests/manage"><Typography className="center-typography">Manage tests {'>>'}</Typography></MenuItem>
           <Divider />
           <MenuItem><Typography className="center-typography">Reports {'>>'}</Typography></MenuItem>
         </MenuList>

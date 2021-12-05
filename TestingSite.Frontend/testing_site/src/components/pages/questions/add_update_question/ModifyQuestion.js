@@ -10,8 +10,8 @@ import {
   Divider,
   TextField,
 } from "@mui/material";
-import QuestionField from "./QuestionField";
-import TextEditor from "./TextEditor";
+import FormField from "../../../common/form_field/FormField";
+import TextEditor from "../../../common/text_editor/TextEditor";
 import useSelect from "../../../../hooks/useSelectValue/useSelect";
 import PossibleAnswers from "./answers/PossibleAnswers";
 import AnswerAlignment from "./AnswerAlignment";
@@ -28,9 +28,12 @@ import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import ErrorNotification from "../../../common/error_notification/ErrorNotification";
 import useErrorNotification from "../../../../hooks/useErrorNotification/useErrorNotification";
 import { v4 as uuidv4 } from 'uuid';
+import {useNavigate } from 'react-router-dom';
+
 
 
 const ModifyQuestion = (props) => {
+  const navigate = useNavigate ();
   const { id } = useParams();
   const [typeValue, onTypeValueChange] = useSelect("");
   const tagsField = useTextFieldList("");
@@ -76,9 +79,13 @@ const ModifyQuestion = (props) => {
       };
       if (id === "add") {
         const res = await axios.post("questions", questionToSend);
+        if(res.status!==200) openNotification("Cannot add question atm please try again");
+        else navigate("/questions/manage")
       } else {
         questionToSend._id = id;
         const res = await axios.put("questions", questionToSend);
+        if(res.status!==200) openNotification("Cannot update question atm please try again");
+        else navigate("/questions/manage")
       }
     }
   };
@@ -94,26 +101,33 @@ const ModifyQuestion = (props) => {
       const res = await axios.get(`Questions/${id}`);
       if (res.status === 200 && res.data != null) {
         let question = res.data;
-        onTypeValueChange({ target: { value: question.type } });
-        setQuestionTextEditor(
-          EditorState.createWithContent(
-            convertFromRaw(JSON.parse(question.text))
-          ),
-          null
-        );
-        setQuestionInnerTextEditor(
-          EditorState.createWithContent(
-            convertFromRaw(JSON.parse(question.inner_text))
-          ),
-          null
-        );
-        setOrientation(question.orientation);
-        let answers_loaded = question.optional_answers.map(ans=>{return {...ans,front_id:uuidv4()}});
-        setAnswers(answers_loaded);
-        tagsField.onChange({ target: { value: question.tags } });
+        setQuestionData(question);
+      }else{
+        openNotification("Server error please reload and try again");
+        return;
       }
     }
-  };
+  }
+  const setQuestionData = (question) =>{
+    onTypeValueChange({ target: { value: question.type } });
+    setQuestionTextEditor(
+    EditorState.createWithContent(
+      convertFromRaw(JSON.parse(question.text))
+    ),
+    null
+    );
+      setQuestionInnerTextEditor(
+        //sets the inner text of the editor
+        EditorState.createWithContent(
+          convertFromRaw(JSON.parse(question.inner_text))
+        ),
+        null
+      );
+      setOrientation(question.orientation);
+      let answers_loaded = question.optional_answers.map(ans => { return { ...ans, front_id: uuidv4() }; });
+      setAnswers(answers_loaded);
+      tagsField.onChange({ target: { value: question.tags } });
+    }
 
   const getQuestion = () => {
     //returns the question object
@@ -171,10 +185,10 @@ const ModifyQuestion = (props) => {
       <RedirectOnEmptyTopic />
       <Paper className="centerize">
         <Stack spacing={2}>
-          <QuestionField field={"Field"}>
+          <FormField field={"Field"}>
             {topicContext.topic.name}
-          </QuestionField>
-          <QuestionField field={"Question Type"}>
+          </FormField>
+          <FormField field={"Question Type"}>
             <FormControl sx={{ m: 1, minWidth: 100 }}>
               <InputLabel id="question-type-select-label">
                 Question Type
@@ -194,46 +208,46 @@ const ModifyQuestion = (props) => {
                 </MenuItem>
               </Select>
             </FormControl>
-          </QuestionField>
-          <QuestionField field={"Question Text"}>
+          </FormField>
+          <FormField field={"Question Text"}>
             <TextEditor
               value={questionText}
               setValue={setQuestionText}
               setEditorValue={setQuestionTextEditor}
               editorValue={questionTextEditor}
             ></TextEditor>
-          </QuestionField>
-          <QuestionField field={"Text below question"}>
+          </FormField>
+          <FormField field={"Text below question"}>
             <TextEditor
               value={questionInnerText}
               setValue={setQuestionInnerText}
               setEditorValue={setQuestionInnerTextEditor}
               editorValue={questionInnerTextEditor}
             ></TextEditor>
-          </QuestionField>
+          </FormField>
           <Divider />
-          <QuestionField field={"Possible Answers"}>
+          <FormField field={"Possible Answers"}>
             <PossibleAnswers
               updateAnswers={updateAnswers}
               answers={answers}
               questionType={typeValue}
             ></PossibleAnswers>
-          </QuestionField>
-          <QuestionField field={"Answer layout"}>
+          </FormField>
+          <FormField field={"Answer layout"}>
             <AnswerAlignment
               changeOrientation={changeOrientation}
               value={orientation}
             />
-          </QuestionField>
+          </FormField>
           <Divider />
-          <QuestionField field={"Tags"}>
+          <FormField field={"Tags"}>
             <TextField
               helperText="Please enter tags seperated by a comma"
               id="tag-input"
               label="Tags"
               {...tagsField}
             />
-          </QuestionField>
+          </FormField>
           <Actions save={saveQuestion} show={showQuestion} />
         </Stack>
       </Paper>

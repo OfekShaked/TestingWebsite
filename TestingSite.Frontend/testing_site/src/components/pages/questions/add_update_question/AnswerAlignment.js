@@ -2,7 +2,7 @@ import React from "react";
 import {FormControl,FormLabel,RadioGroup,Radio,FormControlLabel} from '@mui/material'
 
 const AnswerAlignment = (props) =>{
-
+    //Choice of the answer alignment chosen by the user
     return(
         <FormControl component="fieldset">
             <FormLabel component="legend">Answer Alignmenet</FormLabel>

@@ -1,7 +1,7 @@
 import React from "react";
-import { convertToRaw,EditorState} from "draft-js";
+import { convertToRaw} from "draft-js";
 import { Editor } from 'react-draft-wysiwyg';
-import '../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './TextEditor.css';
 const TextEditor = (props) => {
   const onStateChange = (editorState) => {
