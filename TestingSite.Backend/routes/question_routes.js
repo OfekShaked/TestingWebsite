@@ -5,7 +5,7 @@ const asyncHandler = require("../helpers/asyncHandler");
 
 // Get questions from json
 router.get(
-  "/questions",
+  "/",
   asyncHandler(async (req, res) => {
     try{
     const data = await controller.get_all_questions();
@@ -16,14 +16,32 @@ router.get(
   })
 );
 
+// Get question by id
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    try{
+    const data = await controller.get_question_by_id(req.params.id);
+    res.status(200).send(data);
+    }catch(err){
+      res.status(400).send(err);
+    }
+  })
+);
+
 // Add question 
 router.post(
-  "/questions",
+  "/",
   asyncHandler(async (req, res) => {
     try {
       const data = await controller.add_question(req.body);
+      if(data!==null){
       res.status(200).send(data);
+      }else{
+        res.status(400).send({error:"Post format is missing/incorrect"})
+      }
     } catch (err) {
+      console.log(err);
       res.status(400).send(err);
     }
   })
@@ -31,7 +49,7 @@ router.post(
 
 //update a question
 router.put(
-  "/questions",
+  "/",
   asyncHandler(async (req, res) => {
     try {
       const data = await controller.update_question(req.body);

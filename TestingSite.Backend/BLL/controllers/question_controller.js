@@ -41,11 +41,17 @@ class QuestionService {
           new: true,
       }).populate('optional_answers').populate('topic_ids');
   }
+
+  get_question_by_id = async(id)=>{
+      return await QuestionModel.findById(id).populate('optional_answers').populate('topic_ids');
+  }
+
   increment_test_count = async(question_id) =>{
       return await QuestionModel.findByIdAndUpdate(question_id,{$inc: {number_of_tests:1}},{
         new: true,
     }).populate('optional_answers').populate('topic_ids');
   }
+  
   decrement_test_count = async(question_id) =>{
     return await QuestionModel.findByIdAndUpdate(question_id,{$inc: {number_of_tests: -1}},{
       new: true,

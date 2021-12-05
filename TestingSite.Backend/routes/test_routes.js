@@ -5,7 +5,7 @@ const asyncHandler = require("../helpers/asyncHandler");
 
 // Get questions from json
 router.get(
-  "/tests",
+  "/",
   asyncHandler(async (req, res) => {
      try{
     const data = await controller.get_all_tests();
@@ -18,7 +18,7 @@ router.get(
 
 // Add question to the list in json
 router.post(
-  "/tests",
+  "/",
   asyncHandler(async (req, res) => {
     try {
       const data = await controller.add_test(req.body);
@@ -29,7 +29,7 @@ router.post(
   })
 );
 router.put(
-    "/tests",
+    "/",
     asyncHandler(async (req, res) => {
       try {
         const data = await controller.update_test(req.body);

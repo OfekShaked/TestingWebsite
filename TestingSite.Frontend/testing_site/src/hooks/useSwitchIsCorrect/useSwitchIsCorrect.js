@@ -3,12 +3,12 @@ import {useState} from 'react'
 export const useSwitchIsCorrect = (props) => {
  const [checked, setChecked] = useState(props.initial_value)
  const handleChange = (event) => {
-     if(props.IsChangeAllowed) setChecked(event.target.value)
+     setChecked(!checked)
  }
 
- return {
+ return [
   checked,
-  onChange:handleChange,
- }
+  handleChange,
+ ]
 }
 export default useSwitchIsCorrect;

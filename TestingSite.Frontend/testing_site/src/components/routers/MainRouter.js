@@ -10,7 +10,7 @@ const MainRouter = () =>{
     return(
         <Routes>
             <Route path="/" element={<MainPage/>}/>
-            <Route path="/questions/modify" element = {<ModifyQuestion/>}/>
+            <Route path="/questions/modify/:id" element = {<ModifyQuestion/>}/>
             <Route path="/questions/manage" element= {<ManageQuestions/>}/>
         </Routes>
     )

@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const questionRouter = require("./routes/question_routes");
+const questionsRouter = require("./routes/question_routes");
 const organizationRouter = require("./routes/organization_routes");
 const testRouter = require("./routes/test_routes");
 const topicRouter = require("./routes/topic_routes");
@@ -20,7 +20,7 @@ app.listen(Urls.serverPort, () =>
 
 app.use(bodyParser.json());
 
-app.use("/api/Questions", questionRouter);
+app.use("/api/Questions", questionsRouter);
 
 app.use("/api/Organizations", organizationRouter)
 

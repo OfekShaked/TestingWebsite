@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
-  Typography,
   Stack,
   FormControl,
   FormLabel,
@@ -10,9 +9,10 @@ import {
   FormHelperText,
 } from "@mui/material";
 import Answer from "./Answer";
+import draftToHtml from "draftjs-to-html";
 
-const Question = () => {
-  const [question, setQuestion] = useState({});
+const Question = (props) => {
+  const {question} = props;
   const [testTakenQuestion,setTestTakenQuestion] = useState({question_id:question._id, answers_chosen:[]})
 
   const handleChangeAnswer = (answer_id, is_checked) => {
@@ -21,18 +21,15 @@ const Question = () => {
       if(is_checked){
           if(question.type==="SingleChoiceQuestion") test_question.answers_chosen=[];
         test_question.answers_chosen.push(answer_id)
-      }else{
-        test_question.answers.filter(ans=>ans!==answer_id);
       }
       setTestTakenQuestion(test_question)
   }
 
   return (
-    <Card>
+    <Card className={props.className}>
       <CardContent>
-        <Typography variant="h5" component="div">
-          {question.text}
-        </Typography>
+          <div dangerouslySetInnerHTML={{__html:draftToHtml(JSON.parse(props.question.text_edited))}}></div>
+          <div dangerouslySetInnerHTML={{__html:draftToHtml(JSON.parse(props.question.inner_text))}}></div>
         <FormControl
           error={false}
           component="fieldset"
@@ -42,7 +39,7 @@ const Question = () => {
           <FormLabel component="legend">Pick two</FormLabel>
           <FormGroup>
             <Stack>
-              {question.answers.map((answer, index) => {
+              {question.optional_answers!=null ? question.optional_answers.map((answer, index) => {
                 return (
                   <Answer
                     key={index}
@@ -52,10 +49,11 @@ const Question = () => {
                     testTakenQuestion={testTakenQuestion}
                   ></Answer>
                 );
-              })}
+              }): <></>}
+            
             </Stack>
           </FormGroup>
-          <FormHelperText>{"No error"}</FormHelperText>
+          <FormHelperText>{}</FormHelperText>
         </FormControl>
       </CardContent>
     </Card>

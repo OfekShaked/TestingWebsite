@@ -1,40 +1,100 @@
-import React,{useContext} from 'react';
-import {Paper,Typography} from '@mui/material';
-import CommonTable from '../../../common/table/CommonTable'
+import React, { useContext, useEffect, useState } from "react";
+import { Paper, Typography } from "@mui/material";
+import CommonTable from "../../../common/table/CommonTable";
 import QuestionTextOverFlow from "./column_renders/question_text_and_tag/QuestionTextOverFlow";
-import ActionButton from './column_renders/action_button/ActionButton';
-import './ManageQuestions.css';
-import Actions from './Actions';
-import {TopicContext} from '../../../../contexts/TopicContext';
+import ActionButton from "./column_renders/action_button/ActionButton";
+import "./ManageQuestions.css";
+import Actions from "./Actions";
+import { TopicContext } from "../../../../contexts/TopicContext";
+import RedirectOnEmptyTopic from "../../../common/redirect_conditions/RedirectOnEmptyTopic";
+import axios from "axios";
+import QuestionModal from "../question_view/QuestionModal";
+import useModal from "../../../../hooks/useModal/useModal";
+import {useNavigate } from 'react-router-dom';
 
-const ManageQuestions =  () =>{
-    const topicContext = useContext(TopicContext);
-    return (
-        <Paper className="main-container">
-            <Typography>{topicContext.topic.name}</Typography>
-            <CommonTable columns={columns}/>
-            <Actions></Actions>
-        </Paper>
-    );
-}
 
-const columns = [
-    {field: '_id', headerName:'ID',flex:1},
-    {field: 'text', headerName:'Question text and tags', renderCell: QuestionTextOverFlow,flex:1},
-    {field:'updated_at', headerName:'Last updated',flex:1},
-    {field:'type', headerName:'Question Type',flex:1},
-    {field:'number_of_tests', headerName:"# of tests",flex:1},
-    {field:'edit', headerName:'',flex:1, renderCell:(params)=>{return <ActionButton onClick={()=>editQuestion(params.row)}>Edit</ActionButton>}, disableClickEventBubbling:true},
-    {field:'show', headerName:'',flex:1, renderCell:(params)=>{return <ActionButton onClick={()=>showQuestion(params.row)}>Show</ActionButton>}, disableClickEventBubbling:true},
-    {field:'is_active', headerName:'Is Active', type: 'boolean',flex:1},
+const ManageQuestions = () => {
+  const navigate=useNavigate();
+  const topicContext = useContext(TopicContext);
+  const [questions, setQuestions] = useState([]);
+  const [questionSelected,setQuestionSelected] = useState(null);
+  const [questionOpen,handleQuestionOpen,handleQuestionClose] = useModal();
+  useEffect(() => {
+    const asyncFunc = async() => {
+      //get all questions and set them in the table
+      const res = await axios.get("Questions");
+      const rows = res.data.map(ques=>{return {
+          ...ques,
+          id:ques._id,
+          text:JSON.parse(ques.text).blocks[0].text,
+          text_edited:ques.text,
+        }})
+      setQuestions(rows);
+    };
+    asyncFunc();
+  }, []);
+  const columns = [
+    { field: "_id", headerName: "ID", flex: 1 },
+    {
+      field: "text",
+      headerName: "Question text and tags",
+      renderCell: (params)=>{return <QuestionTextOverFlow value={params.row} colDef={params.colDef}/>},
+      flex: 1,
+    },
+    { field: "updated_at", headerName: "Last updated", flex: 1 },
+    { field: "type", headerName: "Question Type", flex: 1 },
+    { field: "number_of_tests", headerName: "# of tests", flex: 1 },
+    {
+      field: "edit",
+      headerName: "",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <ActionButton onClick={() => editQuestion(params.row)}>
+            Edit
+          </ActionButton>
+        );
+      },
+      disableClickEventBubbling: true,
+    },
+    {
+      field: "show",
+      headerName: "",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <ActionButton onClick={() => showQuestion(params.row)}>
+            Show
+          </ActionButton>
+        );
+      },
+      disableClickEventBubbling: true,
+    },
+    { field: "is_active", headerName: "Is Active", type: "boolean", flex: 1 },
+  ];
+  const editQuestion = (row) => {
+    navigate(`/questions/modify/${row._id}`);
+  };
+  
+  const showQuestion = (row) => {
+    setQuestionSelected(row);
+    handleQuestionOpen();
+  };
+  
+  return (
+    <>
+      <RedirectOnEmptyTopic />
+      <Paper className="main-container">
+        <Typography>{topicContext.topic.name}</Typography>
+        <CommonTable columns={columns} rows={questions}/>
+        <Actions></Actions>
+      </Paper>
+      <QuestionModal open={questionOpen} handleClose={handleQuestionClose} question={questionSelected}/>
+    </>
+  );
 
-]
-const editQuestion = (row) =>{
+  
+};
 
-}
-
-const showQuestion = (row) =>{
-
-}
 
 export default ManageQuestions;

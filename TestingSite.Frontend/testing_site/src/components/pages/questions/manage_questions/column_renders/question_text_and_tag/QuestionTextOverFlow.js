@@ -61,7 +61,12 @@ function isOverflown(element) {
           className="cell-div-style"
         />
         <div ref={cellValue} className="cellValue">
-          {value}
+        <Typography className="tyopography-padding">
+                {value.text}
+              </Typography>
+              <Typography className="tyopography-padding">
+                Tags: {value.tags.join(' | ')}
+              </Typography>
         </div>
         {showPopper && (
           <Popper
@@ -88,7 +93,9 @@ function isOverflown(element) {
   
   const QuestionTextOverFlow =(params) => {
     return (
+      <>
       <GridCellExpand value={params.value || ''} width={params.colDef.computedWidth} />
+      </>
     );
   }
   export default QuestionTextOverFlow;

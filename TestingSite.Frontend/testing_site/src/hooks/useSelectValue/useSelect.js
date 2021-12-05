@@ -3,12 +3,12 @@ import {useState} from 'react'
 export const useSelect = (initial_value) => {
  const [value, setValue] = useState(initial_value)
  const handleChange = (event) => {
-  setValue(event.target.value)
+    setValue(event.target.value)
  }
 
- return {
+ return [
   value,
-  onChange:handleChange,
- }
+  handleChange,
+ ]
 }
 export default useSelect;

@@ -7,7 +7,7 @@ const Actions = (props) =>{
     return(
         <Stack direction="row" alignItems="center" spacing={2} justifyContent="center">
             <Button component={Link} to="/" variant="contained">{'<<'} Back</Button>
-            <Button variant="contained" component={Link} to="/questions/modify" state={{topic:props.topic}}>Add New Question {'>>'}</Button>
+            <Button variant="contained" component={Link} to={{pathname:`/questions/modify/add`}} state={{topic:props.topic}}>Add New Question {'>>'}</Button>
         </Stack>
     )
 }
