@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Paper, Typography } from "@mui/material";
 import CommonTable from "../../../common/table/CommonTable";
-import QuestionTextOverFlow from "./column_renders/question_text_and_tag/QuestionTextOverFlow";
+import QuestionTextOverFlow from "../../../common/question_text_and_tag/QuestionTextOverFlow";
 import ActionButton from "../../../common/action_button/ActionButton";
 import "./ManageQuestions.css";
 import Actions from "./Actions";
@@ -40,6 +40,7 @@ const ManageQuestions = () => {
     {
       field: "text",
       headerName: "Question text and tags",
+      valueGetter: (params) =>{return params.row.text+" "+params.row.tags.join(",")},
       renderCell: (params)=>{return <QuestionTextOverFlow value={params.row} colDef={params.colDef}/>},
       flex: 1,
     },

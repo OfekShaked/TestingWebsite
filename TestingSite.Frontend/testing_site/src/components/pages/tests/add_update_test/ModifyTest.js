@@ -1,15 +1,28 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
 import FormField from "../../../common/form_field/FormField";
 import { TopicContext } from "../../../../contexts/TopicContext";
-import { TextField, Checkbox, Paper, Stack } from "@mui/material";
+import { TextField, Checkbox, Paper, Stack, Divider } from "@mui/material";
 import RedirectOnEmptyTopic from "../../../common/redirect_conditions/RedirectOnEmptyTopic";
 import SelectChoices from "../../../common/select_choices/SelectChoices";
 import TextEditor from "../../../common/text_editor/TextEditor";
+import EmailDelieveryStatus from "./EmailDeliveryStatus";
+import ChooseQuestions from "./choose_questions/ChooseQuestions";
 import { EditorState, convertFromRaw } from "draft-js";
+import PredefinedTemplates from "./PredefinedTemplates";
+import Actions from "./Actions";
+import { useParams } from "react-router-dom";
+import useErrorNotification from "../../../../hooks/useErrorNotification/useErrorNotification"; 
+import ErrorNotification from "../../../common/error_notification/ErrorNotification";
+import axios from "axios";
+import {useNavigate } from 'react-router-dom';
 import "./ModifyTest.css";
 
+
 const ModifyTest = () => {
+  const navigate = useNavigate();
   const topicContext = useContext(TopicContext);
+  const { id } = useParams();
+  const [notificationError,setNotificationError,isNotificationOpen,setIsNotificationOpen] = useErrorNotification();
   const [test, setTest] = useState({
     topic_id: topicContext.topic._id,
     language: "English",
@@ -43,21 +56,77 @@ const ModifyTest = () => {
     setTest(testToUpdate);
   };
 
-  const updateTextEditor = (keys, value) => {
-    updateTestProperty(
-      keys,
-      value === null
-        ? EditorState.createEmpty()
-        : EditorState.createWithContent(convertFromRaw(JSON.parse(value))),
-      null
-    );
-  };
+  const updateQuestions = (questions) =>{
+    updateTestProperty(["questions"],questions);
+  }
+
+  const loadTest = async() =>{
+    if(id !== "add"){
+      const res = await axios.get(`Tests/${id}`);
+      if (res.status === 200 && res.data != null) {
+        let testToLoad = res.data;
+        testToLoad.instructions_editors = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.instructions)));
+        testToLoad.success_text_editor= EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.success_text)));
+        testToLoad.failed_text_editor = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.failed_text)));
+        setTest(testToLoad);
+      }else{
+        openNotification("Server error please reload and try again");
+        return;
+      }
+    }
+  }
+
+  const saveTest = async() =>{
+    if(isTestValid()){
+      if (id === "add") {
+        const res = await axios.post("tests", test);
+        if(res.status!==200) openNotification("Cannot add test atm please try again");
+        else navigate("/tests/manage")
+      } else {
+        test._id = id;
+        const res = await axios.put("tests", test);
+        if(res.status!==200) openNotification("Cannot update test atm please try again");
+        else navigate("/tests/manage")
+      }
+    }
+  }
+
+  const openNotification = (message) =>{
+    setIsNotificationOpen(true);
+      setNotificationError(message);
+  }
+
+  const isTestValid = ()=>{
+    //Validation before save or update
+    if(test.name==="") {
+      openNotification("Test Name is empty");
+      return false;
+    }
+    if(isNaN(test.passing_grade)){
+      openNotification("Test passing grade cannot be empty or not a number");
+      return false;
+    }
+    if(test.passing_grade<0||test.passing_grade>100){
+      openNotification("Test passing grade must be 0-100");
+      return false;
+    }
+    if(test.questions.length<1){
+      openNotification("There must be atleast 1 question added");
+      return false;
+    }
+    return true;
+  }
+
+  useEffect(()=>{
+    loadTest();
+  },[])
 
   return (
     <>
       <RedirectOnEmptyTopic />
       <Paper className="centerize">
         <Stack spacing={2}>
+          <Divider>General Test Details</Divider>
           <FormField field={"Field of study"}>
             {topicContext.topic.name}
           </FormField>
@@ -75,10 +144,19 @@ const ModifyTest = () => {
           </FormField>
           <FormField field={"Test Name"}>
             <TextField
-              id="tag-input"
+              id="tag-name"
               label="Test Name"
               value={test.name}
               onChange={(e) => updateTestProperty(["name"], e.target.value)}
+            />
+          </FormField>
+          <FormField field={"Passing grade"}>
+            <TextField
+              type="number"
+              id="tag-grade"
+              label="Passing Grade"
+              value={test.passing_grade}
+              onChange={(e) => updateTestProperty(["passing_grade"], e.target.value)}
             />
           </FormField>
           <FormField field={"Show Correct Answers After Submission"}>
@@ -91,7 +169,7 @@ const ModifyTest = () => {
           </FormField>
           <FormField field={"Test Instructions"}>
             <TextEditor
-              value={test.instructions_editor}
+              value={test.instructions}
               setValue={(value) => updateTestProperty(["instructions"], value)}
               setEditorValue={(value) =>
                 updateTestProperty(["instructions_editor"], value)
@@ -104,7 +182,7 @@ const ModifyTest = () => {
               value={test.success_text}
               setValue={(value) => updateTestProperty(["success_text"], value)}
               setEditorValue={(value) =>
-                updateTextEditor(["success_text_editor"], value)
+                updateTestProperty(["success_text_editor"], value)
               }
               editorValue={test.success_text_editor}
             />
@@ -114,14 +192,56 @@ const ModifyTest = () => {
               value={test.failed_text}
               setValue={(value) => updateTestProperty(["failed_text"], value)}
               setEditorValue={(value) =>
-                updateTextEditor(["failed_text_editor"], value)
+                updateTestProperty(["failed_text_editor"], value)
               }
               editorValue={test.failed_text_editor}
             />
           </FormField>
-          
+          <Divider>Email Delivery Upon Test Completion</Divider>
+          <FormField field={"Current Status"}>
+            <EmailDelieveryStatus email={test.tester_email} />
+          </FormField>
+          <FormField field={"From"}>
+            <TextField
+              type="email"
+              id="tag-email"
+              label="email"
+              value={test.tester_email}
+              onChange={(e) =>
+                updateTestProperty(["tester_email"], e.target.value)
+              }
+            />
+          </FormField>
+          <Divider>Passing the Test</Divider>
+          <FormField field={"Passing message"}>
+            <TextField
+              id="tag-passing"
+              label="passing"
+              multiline
+              value={test.email_success_content}
+              onChange={(e) =>
+                updateTestProperty(["email_success_content"], e.target.value)
+              }
+            />
+          </FormField>
+          <FormField field={"Failing message"}>
+            <TextField
+              id="tag-failed"
+              label="failing"
+              multiline
+              value={test.email_failed_conent}
+              onChange={(e) =>
+                updateTestProperty(["email_failed_conent"], e.target.value)
+              }
+            />
+          </FormField>
+          <PredefinedTemplates/>
+          <Divider>Questions</Divider>
+          <ChooseQuestions updateQuestions={updateQuestions} questions={test.questions}/>
+          <Actions save={saveTest}/>
         </Stack>
       </Paper>
+      <ErrorNotification message={notificationError} open={isNotificationOpen} setOpen={setIsNotificationOpen}/>
     </>
   );
 };

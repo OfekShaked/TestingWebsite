@@ -1,0 +1,9 @@
+.email-status{
+    font-weight: bolder;
+}
+.on{
+    color:green;
+}
+.off{
+    color:red;
+}

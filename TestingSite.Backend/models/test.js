@@ -62,6 +62,10 @@ const TestSchema = new mongoose.Schema({
     },
     email_failed_conent:{
         type: String,
+    },
+    is_active:{
+        type:Boolean,
+        default:false
     }
 }, { collection: 'tests' })
 
