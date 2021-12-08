@@ -1,33 +1,29 @@
 import React,{useState,useEffect} from 'react';
-import {Box,Stepper,Step,StepButton} from '@mui/material';
+import {Box,Stepper,Step,StepButton,Stack,Button,Divider,Typography} from '@mui/material';
 const TestStepper = (props) =>{
-    const {questions,activeQuestion} = props;
-    const [activeStep,setActiveStep] = useState(0);
-    const [completed,setCompleted] = useState({});
+    const {numOfQuestions,activeStep,handleNext,handleBack,handleStep,completedQuestions} = props;
 
-    const handleStepClick = () => {
-
+    const handleStepClick = (step) => {
+      handleStep(step)
     }
-
-    const isComplete = (index)=>{
-
-    }
-
-    useEffect(()=>{
-        setActiveStep(activeQuestion.index);
-    },[activeQuestion])
 
     return(<>
     <Box sx={{ width: '100%' }}>
+      <Stack direction="row">
+        {activeStep!==0?<Button variant="contained" onClick={handleBack}>{'<<'} Previous Question</Button>:<></>}
+        <Button variant="contained" onClick={handleNext}>{numOfQuestions-1===activeStep?"Submit the Test ":"Next Question "}{'>>'}</Button>
+      <Divider/>
+      <Typography>You answered {Object.keys(completedQuestions).length} out of {numOfQuestions} questions</Typography>
       <Stepper nonLinear activeStep={activeStep}>
-        {questions.map((question) => (
-          <Step key={question.index} completed={()=>isComplete(question.index)}>
-            <StepButton color="inherit" onClick={handleStepClick(question.index)}>
-              {question.index}
+        {[...Array(numOfQuestions)].map((_,index) => (
+          <Step key={index} completed={!!completedQuestions[activeStep]}>
+            <StepButton color="inherit" onClick={handleStepClick(index)}>
+              {index}
             </StepButton>
           </Step>
         ))}
       </Stepper>
+      </Stack>
       </Box>
 
     </>)

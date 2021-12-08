@@ -7,7 +7,7 @@ import SelectChoices from "../../../common/select_choices/SelectChoices";
 import TextEditor from "../../../common/text_editor/TextEditor";
 import EmailDelieveryStatus from "./EmailDeliveryStatus";
 import ChooseQuestions from "./choose_questions/ChooseQuestions";
-import { EditorState, convertFromRaw } from "draft-js";
+import { EditorState, convertFromRaw,convertToRaw } from "draft-js";
 import PredefinedTemplates from "./PredefinedTemplates";
 import Actions from "./Actions";
 import { useParams } from "react-router-dom";
@@ -29,12 +29,9 @@ const ModifyTest = () => {
     name: "",
     passing_grade: "50",
     is_answer_shown: "true",
-    instructions: "",
-    instructions_editor: EditorState.createEmpty(),
-    success_text: "",
-    success_text_editor: EditorState.createEmpty(),
-    failed_text: "",
-    failed_text_editor: EditorState.createEmpty(),
+    instructions: EditorState.createEmpty(),
+    success_text: EditorState.createEmpty(),
+    failed_text: EditorState.createEmpty(),
     tester_email: "",
     email_success_content: "",
     email_failed_conent: "",
@@ -65,9 +62,11 @@ const ModifyTest = () => {
       const res = await axios.get(`Tests/${id}`);
       if (res.status === 200 && res.data != null) {
         let testToLoad = res.data;
-        testToLoad.instructions_editors = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.instructions)));
-        testToLoad.success_text_editor= EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.success_text)));
-        testToLoad.failed_text_editor = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.failed_text)));
+        console.log(testToLoad);
+        testToLoad.instructions = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.instructions)));
+        testToLoad.success_text= EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.success_text)));
+        testToLoad.failed_text = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.failed_text)));
+        console.log(testToLoad);
         setTest(testToLoad);
       }else{
         openNotification("Server error please reload and try again");
@@ -78,13 +77,17 @@ const ModifyTest = () => {
 
   const saveTest = async() =>{
     if(isTestValid()){
+      const testToSave = {...test};
+      testToSave.instructions = JSON.stringify(convertToRaw(test.instructions.getCurrentContent()));
+      testToSave.success_text = JSON.stringify(convertToRaw(test.success_text.getCurrentContent()));
+      testToSave.failed_text = JSON.stringify(convertToRaw(test.failed_text.getCurrentContent()));
       if (id === "add") {
-        const res = await axios.post("tests", test);
+        const res = await axios.post("tests", testToSave);
         if(res.status!==200) openNotification("Cannot add test atm please try again");
         else navigate("/tests/manage")
       } else {
         test._id = id;
-        const res = await axios.put("tests", test);
+        const res = await axios.put("tests", testToSave);
         if(res.status!==200) openNotification("Cannot update test atm please try again");
         else navigate("/tests/manage")
       }
@@ -169,32 +172,29 @@ const ModifyTest = () => {
           </FormField>
           <FormField field={"Test Instructions"}>
             <TextEditor
-              value={test.instructions}
               setValue={(value) => updateTestProperty(["instructions"], value)}
               setEditorValue={(value) =>
-                updateTestProperty(["instructions_editor"], value)
+                updateTestProperty(["instructions"], value)
               }
-              editorValue={test.instructions_editor}
+              editorValue={test.instructions}
             />
           </FormField>
           <FormField field={"Message to show on success"}>
             <TextEditor
-              value={test.success_text}
-              setValue={(value) => updateTestProperty(["success_text"], value)}
+              setValue={() =>{}}
               setEditorValue={(value) =>
-                updateTestProperty(["success_text_editor"], value)
+                updateTestProperty(["success_text"], value)
               }
-              editorValue={test.success_text_editor}
+              editorValue={test.success_text}
             />
           </FormField>
           <FormField field={"Message to show on failure"}>
             <TextEditor
-              value={test.failed_text}
-              setValue={(value) => updateTestProperty(["failed_text"], value)}
+              setValue={() =>{}}
               setEditorValue={(value) =>
-                updateTestProperty(["failed_text_editor"], value)
+                updateTestProperty(["failed_text"], value)
               }
-              editorValue={test.failed_text_editor}
+              editorValue={test.failed_text}
             />
           </FormField>
           <Divider>Email Delivery Upon Test Completion</Divider>

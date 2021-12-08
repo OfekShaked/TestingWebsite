@@ -51,7 +51,6 @@ const TestSchema = new mongoose.Schema({
         type: String,
 		trim: true,
 		lowercase: true,
-		required: true,
     },
     updated_at: { 
         type: Date,

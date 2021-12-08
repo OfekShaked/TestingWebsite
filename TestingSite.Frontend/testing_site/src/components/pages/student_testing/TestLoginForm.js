@@ -2,7 +2,7 @@ import React,{useState} from 'react';
 import {Typography,Container,CssBaseline,Box,TextField,Button} from '@mui/material';
 import './TestLoginForm.css';
 
-const TestLoginForm = () =>{
+const TestLoginForm = (props) =>{
     const [user,setUser] = useState({
         email:'',
         name:{
@@ -11,9 +11,31 @@ const TestLoginForm = () =>{
         },
     })
     const handleSubmit = () =>{
-
+      //submit user values
+      if(isUserValid()){
+        props.setUser({...user})
+      }
     }
+
+    const isUserValid = () =>{
+      //checks if user is valid and add error if not
+      if(user.email===""){
+        props.openNotification("Email cannot be empty");
+        return false;
+      }
+      if(user.name.first===""){
+        props.openNotification("First name cannot be empty");
+        return false;
+      }
+      if(user.name.last===""){
+        props.openNotification("Last name cannot be empty");
+        return false;
+      }
+      return true;
+    }
+
     const updateUserProperty = (keys, value) => {
+      //updates specific property of user
         let testToUpdate = { ...test };
         let obj = testToUpdate;
         for (var i = 0; i < keys.length - 1; i++) {

@@ -1,11 +1,10 @@
-import React,{ useState,useEffect}from 'react';
+import React from 'react';
 import {Stack,Button} from '@mui/material'
 import Answer from './Answer'
 import { v4 as uuidv4 } from 'uuid';
 
 const PossibleAnswers = (props) =>{
     const {answers,updateAnswers,questionType} = props;
-    const [isCorrectChangeAllowed,setIsCorrectChangeAllowed] = useState(false);
 
     const updateAnswer = (answer_to_update) =>{
         //update specific answer

@@ -8,10 +8,6 @@ const TestTakenSchema = new mongoose.Schema({
         index: true,
         required: true,
 	},
-	name: {
-		type: String,
-		required: true,
-	},
     test_questions:{
         type: [{type: mongoose.Schema.Types.ObjectId, ref:'TestQuestionAnswer'}]
     },

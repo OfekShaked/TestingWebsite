@@ -27,13 +27,11 @@ import useTextEditor from "../../../../hooks/useTextEditor/useTextEditor";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
 import ErrorNotification from "../../../common/error_notification/ErrorNotification";
 import useErrorNotification from "../../../../hooks/useErrorNotification/useErrorNotification";
-import { v4 as uuidv4 } from 'uuid';
-import {useNavigate } from 'react-router-dom';
-
-
+import { v4 as uuidv4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 const ModifyQuestion = (props) => {
-  const navigate = useNavigate ();
+  const navigate = useNavigate();
   const { id } = useParams();
   const [typeValue, onTypeValueChange] = useSelect("");
   const tagsField = useTextFieldList("");
@@ -54,7 +52,12 @@ const ModifyQuestion = (props) => {
   const topicContext = useContext(TopicContext);
   const [questionOpen, handleQuestionOpen, handleQuestionClose] = useModal();
   const [questionToShow, setQuestionToShow] = useState({});
-  const [notificationError,setNotificationError,isNotificationOpen,setIsNotificationOpen] = useErrorNotification();
+  const [
+    notificationError,
+    setNotificationError,
+    isNotificationOpen,
+    setIsNotificationOpen,
+  ] = useErrorNotification();
 
   const changeOrientation = (orientation) => {
     setOrientation(orientation);
@@ -62,7 +65,7 @@ const ModifyQuestion = (props) => {
 
   const updateAnswers = (answers_recieved) => {
     //update the answers of the current question
-    setAnswers([...answers_recieved]);
+    setAnswers(answers_recieved);
   };
 
   const saveQuestion = async () => {
@@ -79,13 +82,15 @@ const ModifyQuestion = (props) => {
       };
       if (id === "add") {
         const res = await axios.post("questions", questionToSend);
-        if(res.status!==200) openNotification("Cannot add question atm please try again");
-        else navigate("/questions/manage")
+        if (res.status !== 200)
+          openNotification("Cannot add question atm please try again");
+        else navigate("/questions/manage");
       } else {
         questionToSend._id = id;
         const res = await axios.put("questions", questionToSend);
-        if(res.status!==200) openNotification("Cannot update question atm please try again");
-        else navigate("/questions/manage")
+        if (res.status !== 200)
+          openNotification("Cannot update question atm please try again");
+        else navigate("/questions/manage");
       }
     }
   };
@@ -102,32 +107,32 @@ const ModifyQuestion = (props) => {
       if (res.status === 200 && res.data != null) {
         let question = res.data;
         setQuestionData(question);
-      }else{
+      } else {
         openNotification("Server error please reload and try again");
         return;
       }
     }
-  }
-  const setQuestionData = (question) =>{
+  };
+  const setQuestionData = (question) => {
     onTypeValueChange({ target: { value: question.type } });
     setQuestionTextEditor(
-    EditorState.createWithContent(
-      convertFromRaw(JSON.parse(question.text))
-    ),
-    null
+      EditorState.createWithContent(convertFromRaw(JSON.parse(question.text))),
+      null
     );
-      setQuestionInnerTextEditor(
-        //sets the inner text of the editor
-        EditorState.createWithContent(
-          convertFromRaw(JSON.parse(question.inner_text))
-        ),
-        null
-      );
-      setOrientation(question.orientation);
-      let answers_loaded = question.optional_answers.map(ans => { return { ...ans, front_id: uuidv4() }; });
-      setAnswers(answers_loaded);
-      tagsField.onChange({ target: { value: question.tags } });
-    }
+    setQuestionInnerTextEditor(
+      //sets the inner text of the editor
+      EditorState.createWithContent(
+        convertFromRaw(JSON.parse(question.inner_text))
+      ),
+      null
+    );
+    setOrientation(question.orientation);
+    let answers_loaded = question.optional_answers.map((ans) => {
+      return { ...ans, front_id: uuidv4() };
+    });
+    setAnswers(answers_loaded);
+    tagsField.onChange({ target: { value: question.tags } });
+  };
 
   const getQuestion = () => {
     //returns the question object
@@ -150,32 +155,33 @@ const ModifyQuestion = (props) => {
     };
   };
 
-  const isQuestionValid = () =>{
+  const isQuestionValid = () => {
     //Validation before save or update
     const question_recieved = getQuestion();
-    console.log(JSON.parse(question_recieved.text).blocks[0].text);
-    if(question_recieved.type==="") {
+    if (question_recieved.type === "") {
       openNotification("Type is empty");
       return false;
     }
-    if(JSON.parse(question_recieved.text).blocks[0].text.length<2){
-      openNotification("Question text cannot be empty or smaller than 2 characters");
+    if (JSON.parse(question_recieved.text).blocks[0].text.length < 2) {
+      openNotification(
+        "Question text cannot be empty or smaller than 2 characters"
+      );
       return false;
     }
-    if(question_recieved.optional_answers.length<2){
+    if (question_recieved.optional_answers.length < 2) {
       openNotification("There must be atleast 2 answers added");
       return false;
     }
     for (let i = 0; i < question_recieved.optional_answers.length; i++) {
-      if(question_recieved.optional_answers[i].isCorrect===true) return true;
+      if (question_recieved.optional_answers[i].is_correct === true) return true;
     }
     openNotification("There must be atleast 1 correct answer!");
     return false;
-  }
-  const openNotification = (message) =>{
+  };
+  const openNotification = (message) => {
     setIsNotificationOpen(true);
-      setNotificationError(message);
-  }
+    setNotificationError(message);
+  };
   useEffect(() => {
     loadQuestion();
   }, []);
@@ -185,9 +191,7 @@ const ModifyQuestion = (props) => {
       <RedirectOnEmptyTopic />
       <Paper className="centerize">
         <Stack spacing={2}>
-          <FormField field={"Field"}>
-            {topicContext.topic.name}
-          </FormField>
+          <FormField field={"Field"}>{topicContext.topic.name}</FormField>
           <FormField field={"Question Type"}>
             <FormControl sx={{ m: 1, minWidth: 100 }}>
               <InputLabel id="question-type-select-label">
@@ -256,7 +260,11 @@ const ModifyQuestion = (props) => {
         handleClose={handleQuestionClose}
         question={questionToShow}
       />
-      <ErrorNotification message={notificationError} open={isNotificationOpen} setOpen={setIsNotificationOpen}/>
+      <ErrorNotification
+        message={notificationError}
+        open={isNotificationOpen}
+        setOpen={setIsNotificationOpen}
+      />
     </>
   );
 };

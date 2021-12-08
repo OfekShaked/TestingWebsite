@@ -9,10 +9,11 @@ import {
   FormHelperText,
 } from "@mui/material";
 import Answer from "./Answer";
-import draftToHtml from "draftjs-to-html";
+import TextEditorToHtml from '../../../common/texteditor_to_html/TextEditorToHtml';
+
 
 const Question = (props) => {
-  const {question} = props;
+  const {question,updateTestTakenQuestion} = props;
   const [testTakenQuestion,setTestTakenQuestion] = useState({question_id:question._id, answers_chosen:[]})
 
   const handleChangeAnswer = (answer_id, is_checked) => {
@@ -23,20 +24,21 @@ const Question = (props) => {
         test_question.answers_chosen.push(answer_id)
       }
       setTestTakenQuestion(test_question)
+      if(updateTestTakenQuestion!=null) updateTestTakenQuestion(test_question);
   }
 
   return (
     <Card className={props.className}>
       <CardContent>
-          <div dangerouslySetInnerHTML={{__html:draftToHtml(JSON.parse(props.question.text_edited))}}></div>
-          <div dangerouslySetInnerHTML={{__html:draftToHtml(JSON.parse(props.question.inner_text))}}></div>
+          <TextEditorToHtml value={props.question.text_edited}/>
+          <TextEditorToHtml value={props.question.inner_text}/>
         <FormControl
           error={false}
           component="fieldset"
           sx={{ m: 3 }}
           variant="standard"
         >
-          <FormLabel component="legend">Pick two</FormLabel>
+          <FormLabel component="legend">Pick {question.type==='SingleChoiceQuestion'?"One":"Mupltiple"}</FormLabel>
           <FormGroup>
             <Stack>
               {question.optional_answers!=null ? question.optional_answers.map((answer, index) => {

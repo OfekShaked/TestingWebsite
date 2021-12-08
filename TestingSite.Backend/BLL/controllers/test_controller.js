@@ -7,7 +7,7 @@ class TestService {
    * @returns Array array of all tests
    */
   get_all_tests = async () => {
-    return await TestModel.find({}).populate("topic_id").populate("questions").populate('optional_answers');
+    return await TestModel.find({}).populate("topic_id").populate("questions").populate("questions.optional_answers");
   };
 
   /**
@@ -15,7 +15,7 @@ class TestService {
    * @returns test
    */
   get_test_by_id = async(id)=>{
-    return await TestModel.findById(id).populate("topic_id").populate("questions").populate('optional_answers');
+    return await TestModel.findById(id).populate("topic_id").populate("questions").populate("questions.optional_answers");
 }
 
   /**
@@ -31,7 +31,7 @@ class TestService {
     await increment_test_question_count(test_added.questions);
     await TestModel.populate(test_added, "topic_id");
     await TestModel.populate(test_added, "questions");
-    await TestModel.populate(test_added, "optional_answers")
+    await TestModel.populate(test_added, "questions.optional_answers")
     return test_added;
   };
   /**
@@ -51,7 +51,7 @@ class TestService {
     })
       .populate("topic_id")
       .populate("questions")
-      .populate('optional_answers');
+      .populate("questions.optional_answers");
     await increment_test_question_count(test_model.questions);
     return test_model;
   };

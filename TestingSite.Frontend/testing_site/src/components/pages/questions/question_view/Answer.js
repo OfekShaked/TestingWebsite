@@ -1,6 +1,6 @@
 import React,{ useEffect, useState}from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
-import draftToHtml from "draftjs-to-html";
+import TextEditorToHtml from "../../../common/texteditor_to_html/TextEditorToHtml";
 
 const Answer = (props) => {
     const {testTakenQuestion,name,answer} = props;
@@ -30,7 +30,7 @@ const Answer = (props) => {
           name={name}
         />
       }
-      label={<div dangerouslySetInnerHTML={{__html:draftToHtml(JSON.parse(answer.text))}}></div>}
+      label={<TextEditorToHtml value={answer.text}></TextEditorToHtml>}
     />
   );
 };
