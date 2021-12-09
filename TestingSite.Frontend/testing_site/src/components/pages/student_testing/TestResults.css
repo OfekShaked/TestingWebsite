@@ -1,0 +1,8 @@
+.passing-text{
+    color:green;
+    font-weight: bolder;
+}
+.failing-text{
+    color:red;
+    font-weight: bolder;
+}

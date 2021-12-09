@@ -16,6 +16,9 @@ const TestTakenSchema = new mongoose.Schema({
         ref:'User',
         index: true,
         required: true,
+    },
+    grade:{
+        type:Number
     }
 
 }, { collection: 'tests_taken' })

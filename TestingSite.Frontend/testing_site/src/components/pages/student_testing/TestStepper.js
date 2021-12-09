@@ -1,7 +1,7 @@
-import React,{useState,useEffect} from 'react';
+import React from 'react';
 import {Box,Stepper,Step,StepButton,Stack,Button,Divider,Typography} from '@mui/material';
 const TestStepper = (props) =>{
-    const {numOfQuestions,activeStep,handleNext,handleBack,handleStep,completedQuestions} = props;
+    const {numOfQuestions,activeStep,handleNext,handleBack,handleStep,completedQuestions,handleSubmit} = props;
 
     const handleStepClick = (step) => {
       handleStep(step)
@@ -9,10 +9,13 @@ const TestStepper = (props) =>{
 
     return(<>
     <Box sx={{ width: '100%' }}>
+      <Stack>
       <Stack direction="row">
         {activeStep!==0?<Button variant="contained" onClick={handleBack}>{'<<'} Previous Question</Button>:<></>}
-        <Button variant="contained" onClick={handleNext}>{numOfQuestions-1===activeStep?"Submit the Test ":"Next Question "}{'>>'}</Button>
+        {numOfQuestions-1===activeStep?<Button variant="contained" onClick={handleSubmit}>Submit the Test {'>>'}</Button>
+        :<Button variant="contained" onClick={handleNext}>Next Question {'>>'}</Button>}
       <Divider/>
+      </Stack>
       <Typography>You answered {Object.keys(completedQuestions).length} out of {numOfQuestions} questions</Typography>
       <Stepper nonLinear activeStep={activeStep}>
         {[...Array(numOfQuestions)].map((_,index) => (

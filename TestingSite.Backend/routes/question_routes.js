@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../BLL/controllers/question_controller");
 const asyncHandler = require("../helpers/asyncHandler");
+const logger = require("../logger")
 
 // Get questions from json
 router.get(
@@ -12,6 +13,7 @@ router.get(
     res.status(200).send(data);
     }catch(err){
       res.status(400).send(err);
+      logger.error(err);
     }
   })
 );
@@ -25,6 +27,7 @@ router.get(
     res.status(200).send(data);
     }catch(err){
       res.status(400).send(err);
+      logger.error(err);
     }
   })
 );
@@ -43,6 +46,7 @@ router.post(
     } catch (err) {
       console.log(err);
       res.status(400).send(err);
+      logger.error(err);
     }
   })
 );
@@ -56,6 +60,7 @@ router.put(
       res.status(200).send(data);
     } catch (err) {
       res.status(400).send(err);
+      logger.error(err);
     }
   })
 );

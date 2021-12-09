@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../BLL/controllers/test_controller");
 const asyncHandler = require("../helpers/asyncHandler");
+const logger = require("../logger")
 
 // Get tests from json
 router.get(
@@ -16,6 +17,7 @@ router.get(
       }
      }catch(err){
          res.status(400).send(err);
+         logger.error(err);
      }
   })
 );
@@ -25,14 +27,33 @@ router.get(
   "/:id",
   asyncHandler(async (req, res) => {
     try{
-    const data = await controller.get_test_by_id(req.params.id);
+    const data = await controller.get_test_by_id_with_correct(req.params.id);
   if(data!==null){
       res.status(200).send(data);}
       else{
-        res.status(400).send({error:"No tests"});
+        res.status(400).send({error:"No test"});
       }
     }catch(err){
       res.status(400).send(err);
+      logger.error(err);
+    }
+  })
+);
+
+//get test by id without is correct
+router.get(
+  "/tested/:id",
+  asyncHandler(async (req, res) => {
+    try{
+    const data = await controller.get_test_by_id_without_correct(req.params.id);
+  if(data!==null){
+      res.status(200).send(data);}
+      else{
+        res.status(400).send({error:"No test"});
+      }
+    }catch(err){
+      res.status(400).send(err);
+      logger.error(err);
     }
   })
 );
@@ -46,10 +67,11 @@ router.post(
       if(data!==null){
       res.status(200).send(data);}
       else{
-        res.status(400).send({error:"No tests"});
+        res.status(400).send({error:"Cant add test"});
       }
     } catch (err) {
       res.status(400).send(err);
+      logger.error(err);
     }
   })
 );
@@ -62,10 +84,11 @@ router.put(
         if(data!==null){
           res.status(200).send(data);}
           else{
-            res.status(400).send({error:"No tests"});
+            res.status(400).send({error:"Cant update test"});
           }
       } catch (err) {
         res.status(400).send(err);
+        logger.error(err);
       }
     })
   );

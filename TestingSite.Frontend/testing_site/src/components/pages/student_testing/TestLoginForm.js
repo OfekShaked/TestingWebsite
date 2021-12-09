@@ -36,13 +36,13 @@ const TestLoginForm = (props) =>{
 
     const updateUserProperty = (keys, value) => {
       //updates specific property of user
-        let testToUpdate = { ...test };
-        let obj = testToUpdate;
+        let userToUpdate = { ...user };
+        let obj = userToUpdate;
         for (var i = 0; i < keys.length - 1; i++) {
           obj = obj[keys[i]];
         }
         obj[keys[i]] = value;
-        setUser(testToUpdate);
+        setUser(userToUpdate);
       };
     
 
@@ -53,7 +53,7 @@ const TestLoginForm = (props) =>{
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -92,6 +92,7 @@ const TestLoginForm = (props) =>{
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit}
             >
               Submit
             </Button>

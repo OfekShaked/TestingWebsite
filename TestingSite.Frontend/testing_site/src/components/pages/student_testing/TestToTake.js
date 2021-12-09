@@ -6,11 +6,13 @@ import useErrorNotification from "../../../hooks/useErrorNotification/useErrorNo
 import { EditorState, convertFromRaw } from "draft-js";
 import TestLoginForm from "./TestLoginForm";
 import TestQuestions from "./TestQuestions";
-
+import TestResults from "./TestResults";
 
 const TestToTake = () => {
   const { id } = useParams();
   const [test, setTest] = useState({});
+  const [isTestFinished,setIsTestFinished] = useState(false);
+  const [testTakenResults,setTestTakenResults] = useState({});
   const [
     notificationError,
     setNotificationError,
@@ -28,7 +30,7 @@ const TestToTake = () => {
     setNotificationError(message);
   };
 
-  const updateTestTakenProperty = (keys, value) => {
+  const updateTestTakenProperty = async(keys, value) => {
       //updates a specific property in test taken
     let testToUpdate = { ...testTaken };
     let obj = testToUpdate;
@@ -36,14 +38,15 @@ const TestToTake = () => {
       obj = obj[keys[i]];
     }
     obj[keys[i]] = value;
-    setTestTaken(testToUpdate);
+    await setTestTaken(testToUpdate);
   };
 
   const loadTest = async () => {
       //load test from server
-    const res = await axios.get(`Tests/${id}`);
+    const res = await axios.get(`Tests/tested/${id}`);
     if (res.status === 200 && res.data != null) {
       let testToLoad = res.data;
+      console.log(testToLoad);
       testToLoad.instructions_editors = EditorState.createWithContent(
         convertFromRaw(JSON.parse(testToLoad.instructions))
       );
@@ -60,14 +63,27 @@ const TestToTake = () => {
     }
   };
 
+  const finishTest = async() =>{
+    const testToSend = {...testTaken};
+    testToSend.test_questions=Object.values(testTaken.test_questions);
+    const res = await axios.post("TestTaken",testToSend);
+    console.log(testToSend);
+    setTestTakenResults(res.data);
+    setIsTestFinished(true);
+  }
+
   useEffect(() => {loadTest()}, []);
 
   return (
     <>
+    {!isTestFinished?<>
         {testTaken.user===null?
-        <TestLoginForm openNotification={openNotification} setUser={(value)=>updateTestTakenProperty(["user"],value)}/>:
-            <TestQuestions questions={test.questions}/>
-        }
+        <TestLoginForm  openNotification={openNotification} setUser={(value)=>updateTestTakenProperty(["user"],value)}/>:
+            <TestQuestions questions={test.questions} testName={test.name} testInstructions={test.instructions} testId={test._id}
+              updateQuestions={async(value)=>await updateTestTakenProperty(["test_questions"],value)} finishTest={finishTest}
+            />
+        }</>:<TestResults grade={testTakenResults.grade} numOfQuestions={test.questions.length} passingGrade={test.passing_grade}/>
+      }
       <ErrorNotification
         message={notificationError}
         open={isNotificationOpen}

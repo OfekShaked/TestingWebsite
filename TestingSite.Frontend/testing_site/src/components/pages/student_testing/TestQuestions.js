@@ -5,7 +5,7 @@ import { Stack, Typography } from "@mui/material";
 import TestStepper from "./TestStepper";
 
 const TestQuestions = (props) => {
-  const { questions } = props;
+  const { questions,testName,testInstructions,testId,updateQuestions,finishTest } = props;
   const [isStarted, setIsStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [testTakenQuestions, setTestTakenQuestions] = useState({});
@@ -32,6 +32,11 @@ const TestQuestions = (props) => {
     setCurrentQuestionIndex((prevState) => prevState - 1);
   };
 
+  const handleSubmit = async() =>{
+    await updateQuestions(testTakenQuestions);
+    finishTest();
+  }
+
   const handleQuestion = (questionIndex) => {
       //handle question step click
     setCurrentQuestionIndex(questionIndex);
@@ -46,16 +51,16 @@ const TestQuestions = (props) => {
       //checks if all tests questions has been completed
     return Object.keys(testTakenQuestions).length === questions.length;
   };
-
   return (
     <>
       {!isStarted ? (
-        <TestInstructions startTest={() => setIsStarted(true)} />
+        <TestInstructions name={testName} instructions={testInstructions} startTest={() => setIsStarted(true)} />
       ) : (
         <Stack>
             <Typography>Question {currentQuestionIndex+1}</Typography>
           <Question
             question={questions[currentQuestionIndex]}
+            testId={testId}
             updateTestTakenQuestion={handleTestTakenQuestionChange}
           ></Question>
           <TestStepper
@@ -63,6 +68,7 @@ const TestQuestions = (props) => {
             activeStep={currentQuestionIndex}
             handleNext={handleNextQuestion}
             handleBack={handleBack}
+            handleSubmit={handleSubmit}
             numOfQuestions={questions.length}
             handleStep={handleQuestion}
           />

@@ -1,7 +1,7 @@
 class Logger {
   error = (message) => {
-    console.error(message);
+    console.log(message);
   };
 }
 
-module.export = new Logger();
+module.exports = new Logger();

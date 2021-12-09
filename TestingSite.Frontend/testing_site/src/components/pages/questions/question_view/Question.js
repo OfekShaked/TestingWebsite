@@ -13,8 +13,8 @@ import TextEditorToHtml from '../../../common/texteditor_to_html/TextEditorToHtm
 
 
 const Question = (props) => {
-  const {question,updateTestTakenQuestion} = props;
-  const [testTakenQuestion,setTestTakenQuestion] = useState({question_id:question._id, answers_chosen:[]})
+  const {question,updateTestTakenQuestion,testId} = props;
+  const [testTakenQuestion,setTestTakenQuestion] = useState({test_taken_id:testId,question_id:question._id, answers_chosen:[]})
 
   const handleChangeAnswer = (answer_id, is_checked) => {
       //manipulate answers chosen based on conditions
@@ -30,7 +30,7 @@ const Question = (props) => {
   return (
     <Card className={props.className}>
       <CardContent>
-          <TextEditorToHtml value={props.question.text_edited}/>
+          {props.question.text_edited==null?<TextEditorToHtml value={props.question.text}/>:<TextEditorToHtml value={props.question.text_edited}/>}
           <TextEditorToHtml value={props.question.inner_text}/>
         <FormControl
           error={false}

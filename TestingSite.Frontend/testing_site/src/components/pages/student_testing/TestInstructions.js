@@ -4,7 +4,6 @@ import TextEditorToHtml from '../../common/texteditor_to_html/TextEditorToHtml';
 
 const TestInstructions = (props) =>{
     const {name,instructions,startTest} = props;
-
     return(
         <Card variant="outlined">
             <CardContent>

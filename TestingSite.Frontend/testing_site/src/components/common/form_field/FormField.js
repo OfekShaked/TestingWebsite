@@ -1,7 +1,7 @@
 import React from 'react';
 import {Typography,Stack} from '@mui/material'
 
-const QuestionField = (props) =>{
+const FormField = (props) =>{
     
     return(
         <Stack direction="row">
@@ -10,4 +10,4 @@ const QuestionField = (props) =>{
         </Stack>
     );
 }
-export default QuestionField;
+export default FormField;
