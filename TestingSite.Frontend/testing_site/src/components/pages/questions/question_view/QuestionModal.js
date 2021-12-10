@@ -1,6 +1,6 @@
 import React from 'react';
 import Question from './Question';
-import {Modal} from '@material-ui/core'
+import {Modal} from '@mui/material'
 import './QuestionModal.css';
 
 const QuestionModal = (props) =>{

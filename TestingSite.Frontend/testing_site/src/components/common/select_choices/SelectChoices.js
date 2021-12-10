@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormControl,Select,MenuItem} from '@material-ui/core';
+import {FormControl,Select,MenuItem} from '@mui/material';
 
 const SelectChoices = (props) =>{
     const {value,onValueChange,choices,header} = props;

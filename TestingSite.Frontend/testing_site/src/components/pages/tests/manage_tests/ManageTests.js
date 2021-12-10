@@ -2,7 +2,7 @@ import React,{useContext,useState,useEffect} from 'react';
 import ActionButton from '../../../common/action_button/ActionButton';
 import CommonTable from '../../../common/table/CommonTable';
 import RedirectOnEmptyTopic from '../../../common/redirect_conditions/RedirectOnEmptyTopic';
-import {Paper,Typography} from '@material-ui/core'
+import {Paper,Typography} from '@mui/material'
 import Actions from './Actions';
 import { TopicContext } from "../../../../contexts/TopicContext";
 import {useNavigate} from 'react-router-dom';

@@ -57,6 +57,15 @@ class TestService {
       }
     };
 
+    //get test names with their id
+    get_all_test_names = async(topic_id) =>{
+      try{
+        return await TestModel.find({topic_id:topic_id}).select("name _id");
+      }catch(err){
+        logger.error(err);
+      }
+    }
+
   /**
    *
    * @param {*} test

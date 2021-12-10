@@ -6,6 +6,7 @@ import ManageQuestions from '../pages/questions/manage_questions/ManageQuestions
 import ManageTests from '../pages/tests/manage_tests/ManageTests';
 import ModifyTest from '../pages/tests/add_update_test/ModifyTest';
 import TestToTake from '../pages/student_testing/TestToTake';
+import ReportSelection from '../pages/reports/report_selection/ReportSelection';
 
 
 const MainRouter = () =>{
@@ -18,6 +19,7 @@ const MainRouter = () =>{
             <Route path="/tests/modify/:id" element = {<ModifyTest/>}/>
             <Route path="/tests/manage" element= {<ManageTests/>}/>
             <Route path="/test/:id" element= {<TestToTake/>}/>
+            <Route path="/report"element= {<ReportSelection/>}/>
         </Routes>
     )
 }

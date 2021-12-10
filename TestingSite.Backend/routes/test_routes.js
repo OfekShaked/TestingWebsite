@@ -40,6 +40,24 @@ router.get(
   })
 );
 
+// Get test names by topic id
+router.get(
+  "/names/:topicid",
+  asyncHandler(async (req, res) => {
+    try{
+    const data = await controller.get_all_test_names(req.params.topicid);
+  if(data!==null){
+      res.status(200).send(data);}
+      else{
+        res.status(400).send({error:"No test"});
+      }
+    }catch(err){
+      res.status(400).send(err);
+      logger.error(err);
+    }
+  })
+);
+
 //get test by id without is correct
 router.get(
   "/tested/:id",

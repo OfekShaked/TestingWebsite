@@ -43,7 +43,7 @@ const MainPage = () =>{
           <Divider />
           <MenuItem component={Link} to="/tests/manage"><Typography className="center-typography">Manage tests {'>>'}</Typography></MenuItem>
           <Divider />
-          <MenuItem><Typography className="center-typography">Reports {'>>'}</Typography></MenuItem>
+          <MenuItem  component={Link} to="/report"><Typography className="center-typography">Reports {'>>'}</Typography></MenuItem>
         </MenuList>
       </Paper>
         </Paper>
