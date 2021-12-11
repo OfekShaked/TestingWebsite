@@ -47,10 +47,9 @@ const ChooseQuestions = (props) => {
     {
       field: "text",
       headerName: "Question text and tags",
-      valueGetter: (params) =>{return params.row.text+" "+params.row.tags.join(",")},
       renderCell: (params) => {
         return (
-          <QuestionTextOverFlow value={params.row} colDef={params.colDef} />
+          <QuestionTextOverFlow tags={params.row.tags.join(",")} text={params.row.text} value={params.row} colDef={params.colDef} />
         );
       },
       flex: 1,

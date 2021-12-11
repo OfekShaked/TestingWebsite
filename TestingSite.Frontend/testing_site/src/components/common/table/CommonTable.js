@@ -5,14 +5,17 @@ import "./CommonTable.css";
 
 const CommonTable = (props) => {
   return (
-    <Paper className="table-background">
+    <Paper className="table-background" style={{display:'flex',height:'100%'}}>
       <DataGrid
+        className={"table-height"}
         rows={props.rows}
         columns={props.columns}
         onCellClick={props.onCellClick}
         checkboxSelection={props.checkboxSelection}
         selectionModel={props.selectionModel}
         onSelectionModelChange={props.onSelectionModelChange}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
       ></DataGrid>
     </Paper>
   );

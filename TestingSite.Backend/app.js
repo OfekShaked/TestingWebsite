@@ -6,6 +6,8 @@ const testRouter = require("./routes/test_routes");
 const topicRouter = require("./routes/topic_routes");
 const testTakenRouter = require("./routes/test_taken_routes");
 const testReportRouter = require("./routes/test_report_routes");
+const userReportRouter = require("./routes/user_report_routes")
+const userRouter = require("./routes/user_routes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const Urls = require("./settings/staticUrls");
@@ -34,3 +36,6 @@ app.use("/api/TestTaken",testTakenRouter);
 
 app.use("/api/TestReport",testReportRouter);
 
+app.use("/api/UserReport", userReportRouter)
+
+app.use("/api/Users", userRouter);

@@ -1,0 +1,11 @@
+.table-container{
+    flex-grow: 1;
+}
+.question-stats{
+    display: flex;
+    height: 30vh;
+}
+.grades-answers{
+    display: flex;
+    height: 40vh;
+}

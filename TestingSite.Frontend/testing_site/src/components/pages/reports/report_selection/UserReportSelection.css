@@ -1,0 +1,11 @@
+.table-container{
+    flex-grow: 1;
+}
+.user-table{
+    display: flex;
+    height: 25vh;
+}
+.test-table{
+    display: flex;
+    height: 35vh;
+}

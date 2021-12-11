@@ -28,7 +28,7 @@ class TestReportService {
   };
 
   get_test_report_by_id = async(test_id) =>{
-    const report = { summary: {}, grades: [], questions: [] };
+    const report = { summary: {} };
     let tests_to_create_report_on = await TestTakenModel.find({test_id:test_id});
     tests_to_create_report_on = await populate_test_report(tests_to_create_report_on);
     report.summary = get_test_summary(tests_to_create_report_on,"","");
@@ -38,12 +38,19 @@ class TestReportService {
     );
     return report;
   }
+
 }
 
+
+/**
+ * get statistics about the questions
+ * @param {*} tests_to_report list of TestTaken 
+ * @returns object with question statistics
+ */
 const get_question_statistics = (tests_to_report) => {
   let questions = [];
   tests_to_report[0].test_id.questions.forEach((question)=>{
-    questions.push( {question:{question},num_passed:0})
+    questions.push( {question:question,num_passed:0})
   });
   for (let j = 0; j < tests_to_report.length; j++) {
     const test_taken = tests_to_report[j];
@@ -61,7 +68,7 @@ const get_question_statistics = (tests_to_report) => {
         questions[i].num_passed+=1;
     }
   }
-  questions.map((question=>{
+  questions = questions.map((question=>{
     let question_edit={...question};
     question_edit.num_of_submissions=tests_to_report.length;
     question_edit.answer_correct_percent=Math.round((question.num_passed / tests_to_report.length) * 100);
@@ -80,16 +87,15 @@ const get_question_statistics = (tests_to_report) => {
 const get_test_summary = (tests, start_date, end_date) => {
   let summary = {};
   summary.name = tests[0].test_id.name;
-  summary.Id = tests[0].test_id._id;
+  summary.id = tests[0].test_id._id;
   summary.num_of_questions = tests[0].test_id.questions.length;
   summary.passing_grade = tests[0].test_id.passing_grade;
-  summary.date_rage = `${start_date} - ${end_date}`;
+  summary.date_range = `${start_date} - ${end_date}`;
   summary.number_of_submissions = tests.length;
-  let { num_passed, passing_percentage, average_grade } =
-    get_general_scores(tests);
+  let { num_passed, passing_percentage, avg_score } = get_general_scores(tests);
   summary.num_passed = num_passed;
   summary.passing_percentage = passing_percentage;
-  summary.average_grade = average_grade;
+  summary.average_grade = avg_score;
   return summary;
 };
 
@@ -107,16 +113,17 @@ const get_general_scores = (tests) => {
     if (test_taken.grade >= test_taken.test_id.passing_grade) num_passed++;
   }
   let passing_percentage = Math.round((num_passed / tests.length) * 100);
-  let avg_score = sum / tests.length;
+  let avg_score = Math.round(sum / tests.length);
   return {
     num_passed,
     passing_percentage,
-    avg_score,
+    avg_score
   };
 };
 
 const populate_test_report = async(test_report) => {
-  await TestTakenModel.populate(test_report, "test_id");
+  await TestTakenModel.populate(test_report, {path:"test_id",populate:{path:'questions'}
+});
   await TestTakenModel.populate(test_report, "user");
   await TestTakenModel.populate(test_report, {
     path: "test_questions",

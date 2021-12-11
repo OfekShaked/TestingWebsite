@@ -10,14 +10,13 @@ function isOverflown(element) {
   }
   
   const GridCellExpand = React.memo(function GridCellExpand(props) {
-    const { width, value } = props;
+    const { width, value, tags, text } = props;
     const wrapper = React.useRef(null);
     const cellDiv = React.useRef(null);
     const cellValue = React.useRef(null);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [showFullCell, setShowFullCell] = React.useState(false);
     const [showPopper, setShowPopper] = React.useState(false);
-  
     const handleMouseEnter = () => {
       const isCurrentlyOverflown = isOverflown(cellValue.current);
       setShowPopper(isCurrentlyOverflown);
@@ -62,10 +61,10 @@ function isOverflown(element) {
         />
         <div ref={cellValue} className="cellValue">
         <Typography className="tyopography-padding">
-                {value.text}
+                {text==null?<>{value.text}</>:<>{text}</>}
               </Typography>
               <Typography className="tyopography-padding">
-                Tags: {value.tags.join(' | ')}
+                {tags==null? <>Tags: {value.tags.join(' | ')}</>:<>Tags: {tags?.join(" | ")}</>}
               </Typography>
         </div>
         {showPopper && (
@@ -79,10 +78,10 @@ function isOverflown(element) {
               style={{ minHeight: wrapper.current.offsetHeight - 3 }}
             >
               <Typography className="tyopography-padding">
-                {value.text}
+              {text==null?<>{value.text}</>:<>{text}</>}
               </Typography>
               <Typography className="tyopography-padding">
-                {value.tags.join(' | ')}
+              {tags==null? <>Tags: {value.tags.join(' | ')}</>:<>Tags: {tags.join(" | ")}</>}
               </Typography>
             </Paper>
           </Popper>
@@ -94,7 +93,7 @@ function isOverflown(element) {
   const QuestionTextOverFlow =(params) => {
     return (
       <>
-      <GridCellExpand value={params.value || ''} width={params.colDef.computedWidth} />
+      <GridCellExpand tags={params.tags} text={params.text} value={params.value || ''} width={params.colDef.computedWidth} />
       </>
     );
   }
