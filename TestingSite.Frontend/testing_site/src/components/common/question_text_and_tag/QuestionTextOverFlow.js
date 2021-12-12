@@ -10,7 +10,7 @@ function isOverflown(element) {
   }
   
   const GridCellExpand = React.memo(function GridCellExpand(props) {
-    const { width, value, tags, text } = props;
+    const { width, value, text } = props;
     const wrapper = React.useRef(null);
     const cellDiv = React.useRef(null);
     const cellValue = React.useRef(null);
@@ -18,7 +18,7 @@ function isOverflown(element) {
     const [showFullCell, setShowFullCell] = React.useState(false);
     const [showPopper, setShowPopper] = React.useState(false);
     const handleMouseEnter = () => {
-      const isCurrentlyOverflown = isOverflown(cellValue.current);
+      const isCurrentlyOverflown = text.length>50||value.tags.length>50;
       setShowPopper(isCurrentlyOverflown);
       setAnchorEl(cellDiv.current);
       setShowFullCell(true);
@@ -71,7 +71,6 @@ function isOverflown(element) {
           <Popper
             open={showFullCell && anchorEl !== null}
             anchorEl={anchorEl}
-            style={{ width, marginLeft: -17 }}
           >
             <Paper
               elevation={1}
