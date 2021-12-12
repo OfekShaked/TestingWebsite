@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Question from "../questions/question_view/Question";
+import React, { useEffect, useState } from "react";
+import Question from "./questions/Question";
 import TestInstructions from "./TestInstructions";
 import { Stack, Typography } from "@mui/material";
 import TestStepper from "./TestStepper";
@@ -9,11 +9,13 @@ const TestQuestions = (props) => {
   const [isStarted, setIsStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [testTakenQuestions, setTestTakenQuestions] = useState({});
+  const [questionsToShow,setQuestionsToShow] = useState([]);
 
   const handleTestTakenQuestionChange = (questionTaken) => {
       //handle what happens when a test question has changed its value
     const testTakenQuestionsToUpdate = { ...testTakenQuestions };
     testTakenQuestionsToUpdate[currentQuestionIndex] = questionTaken;
+    console.log(testTakenQuestionsToUpdate);
     setTestTakenQuestions(testTakenQuestionsToUpdate);
   };
 
@@ -24,7 +26,7 @@ const TestQuestions = (props) => {
           // find the first step that has been completed
           questions.findIndex((step, i) => !(i in testTakenQuestions))
         : currentQuestionIndex + 1;
-    testTakenQuestions(newActiveQuestionIndex);
+        setCurrentQuestionIndex(newActiveQuestionIndex);
   };
 
   const handleBack = () => {
@@ -34,7 +36,7 @@ const TestQuestions = (props) => {
 
   const handleSubmit = async() =>{
     await updateQuestions(testTakenQuestions);
-    finishTest();
+    finishTest(testTakenQuestions);
   }
 
   const handleQuestion = (questionIndex) => {
@@ -51,6 +53,8 @@ const TestQuestions = (props) => {
       //checks if all tests questions has been completed
     return Object.keys(testTakenQuestions).length === questions.length;
   };
+
+
   return (
     <>
       {!isStarted ? (
@@ -58,11 +62,12 @@ const TestQuestions = (props) => {
       ) : (
         <Stack>
             <Typography>Question {currentQuestionIndex+1}</Typography>
-          <Question
-            question={questions[currentQuestionIndex]}
-            testId={testId}
-            updateTestTakenQuestion={handleTestTakenQuestionChange}
-          ></Question>
+            <Question 
+              question={questions[currentQuestionIndex]}
+              testId={testId}
+              updateTestTakenQuestion={handleTestTakenQuestionChange}
+              testTakenQuestion={testTakenQuestions[currentQuestionIndex]}
+            ></Question>
           <TestStepper
             completedQuestions={testTakenQuestions}
             activeStep={currentQuestionIndex}

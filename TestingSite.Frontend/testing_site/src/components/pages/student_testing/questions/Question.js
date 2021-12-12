@@ -13,19 +13,16 @@ import TextEditorToHtml from '../../../common/texteditor_to_html/TextEditorToHtm
 
 
 const Question = (props) => {
-  const {question,updateTestTakenQuestion,testId} = props;
-  const [testTakenQuestion,setTestTakenQuestion] = useState({test_taken_id:testId,question_id:question._id, answers_chosen:[]})
+  const {question,updateTestTakenQuestion,testTakenQuestion,testId} = props;
 
   const handleChangeAnswer = (answer_id, is_checked) => {
       //manipulate answers chosen based on conditions
-      let test_question = {...testTakenQuestion}
+      let testTakenQuestionToUpdate = {test_taken_id:testId,question_id:question._id, answers_chosen:[]};
       if(is_checked){
-          if(question.type==="SingleChoiceQuestion") test_question.answers_chosen=[];
-        test_question.answers_chosen.push(answer_id)
+          if(question.type==="SingleChoiceQuestion") testTakenQuestionToUpdate.answers_chosen=[];
+          testTakenQuestionToUpdate.answers_chosen.push(answer_id)
       }
-      setTestTakenQuestion(test_question)
-      if(updateTestTakenQuestion!=null) updateTestTakenQuestion(test_question);
-      console.log(test_question);
+      if(updateTestTakenQuestion!=null) updateTestTakenQuestion(testTakenQuestionToUpdate);
   }
 
   return (

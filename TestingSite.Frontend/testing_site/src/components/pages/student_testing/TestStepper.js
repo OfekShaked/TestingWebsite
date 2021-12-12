@@ -19,8 +19,8 @@ const TestStepper = (props) =>{
       <Typography>You answered {Object.keys(completedQuestions).length} out of {numOfQuestions} questions</Typography>
       <Stepper nonLinear activeStep={activeStep}>
         {[...Array(numOfQuestions)].map((_,index) => (
-          <Step key={index} completed={!!completedQuestions[activeStep]}>
-            <StepButton color="inherit" onClick={handleStepClick(index)}>
+          <Step key={index} completed={!!completedQuestions[index]}>
+            <StepButton color="inherit" onClick={()=>handleStepClick(index)}>
               {index}
             </StepButton>
           </Step>

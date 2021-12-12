@@ -1,6 +1,7 @@
 const TestTakenModel = require("../../models/test_taken");
 const user_controller = require("./user_controller");
 const test_taken_question_controller = require("./test_taken_questions_controller");
+const user_test_report_controller = require('./user_report_controller');
 const logger = require("../../logger");
 
 class TestTakenService {
@@ -16,11 +17,22 @@ class TestTakenService {
       await TestTakenModel.populate(test_taken_added, {
         path: "test_questions",
         model: "TestTakenQuestion",
-        populate: { path: "answers_chosen", model: "Answer" },
+        populate: {
+          path: "question_id",
+          model: "Question",
+          populate: { path: "optional_answers", model: "Answer" },
+        },
       });
+      await TestTakenModel.populate(test_taken_added,{path:"test_questions.answers_chosen", model: "Answer"});
       test_taken_added.grade = await calculate_grade(test_taken_added);
       await test_taken_added.save();
-      return test_taken_added;
+      if(test_taken_added.test_id.is_answer_shown){
+        return user_test_report_controller.get_user_test_report(test_taken_added._id);
+      }else{
+        return {
+          grade: test_taken_added.grade,
+        };
+      }
     } catch (err) {
       logger.error(err);
     }
@@ -44,19 +56,6 @@ const add_user_and_questions = async (test_taken) => {
 
 const calculate_grade = async (test_taken) => {
   const score_for_question = 100 / test_taken.test_questions.length;
-  try {
-    await TestTakenModel.populate(test_taken, {
-      path: "test_questions",
-      model: "TestTakenQuestion",
-      populate: {
-        path: "question_id",
-        model: "Question",
-        populate: { path: "optional_answers", model: "Answer" },
-      },
-    });
-  } catch (err) {
-    logger.error(err);
-  }
   let grade = 0;
   for (let i = 0; i < test_taken.test_questions.length; i++) {
     const question = test_taken.test_questions[i];
@@ -64,10 +63,15 @@ const calculate_grade = async (test_taken) => {
     question.question_id.optional_answers.forEach((ans) => {
       if (ans.is_correct) num_of_correct_questions++;
     });
+    let is_skip = false;
     for (let j = 0; j < question.answers_chosen.length; j++) {
       const answer = question.answers_chosen[j];
-      if (!answer.is_correct) i += 1;
+      if (!answer.is_correct) {
+        is_skip=true;
+        j=question.answers_chosen.length;
+      }
     }
+    if(is_skip) continue;
     if (question.answers_chosen.length === num_of_correct_questions)
       grade += score_for_question;
   }

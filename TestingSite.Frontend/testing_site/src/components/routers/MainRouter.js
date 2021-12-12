@@ -7,7 +7,7 @@ import ManageTests from '../pages/tests/manage_tests/ManageTests';
 import ModifyTest from '../pages/tests/add_update_test/ModifyTest';
 import TestToTake from '../pages/student_testing/TestToTake';
 import ReportSelection from '../pages/reports/report_selection/ReportSelection';
-import TestReport from '../pages/reports/report_selection/test_report/TestReport';
+import StudentTestReport from '../pages/reports/report_selection/student_report/StudentTestReport';
 
 
 const MainRouter = () =>{
@@ -21,7 +21,7 @@ const MainRouter = () =>{
             <Route path="/tests/manage" element= {<ManageTests/>}/>
             <Route path="/test/:id" element= {<TestToTake/>}/>
             <Route path="/report" element= {<ReportSelection/>}/>
-            <Route path="/TestReport/:id" element={<TestReport/>}/>
+            <Route path="/TestReport/:id" element={<StudentTestReport/>}/>
             </Routes>
     )
 }

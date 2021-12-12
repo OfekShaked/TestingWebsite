@@ -1,0 +1,14 @@
+.correct_chosen{
+    color:green;
+    background-color: #f1cb9e
+    ;
+}
+
+.incorrect{
+    color:red;
+}
+
+.correct{
+    color:green;
+}
+

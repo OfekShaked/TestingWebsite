@@ -64,7 +64,7 @@ function isOverflown(element) {
                 {text==null?<>{value.text}</>:<>{text}</>}
               </Typography>
               <Typography className="tyopography-padding">
-                {tags==null? <>Tags: {value.tags.join(' | ')}</>:<>Tags: {tags?.join(" | ")}</>}
+                Tags: {value.tags}
               </Typography>
         </div>
         {showPopper && (
@@ -81,7 +81,7 @@ function isOverflown(element) {
               {text==null?<>{value.text}</>:<>{text}</>}
               </Typography>
               <Typography className="tyopography-padding">
-              {tags==null? <>Tags: {value.tags.join(' | ')}</>:<>Tags: {tags.join(" | ")}</>}
+                Tags: {value.tags}
               </Typography>
             </Paper>
           </Popper>

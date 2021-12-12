@@ -60,10 +60,15 @@ const get_question_statistics = (tests_to_report) => {
       question.question_id.optional_answers.forEach((ans) => {
         if (ans.is_correct) num_of_correct_questions++;
       });
+      let is_skip = false;
       for (let k = 0; k < question.answers_chosen.length; k++) {
         const answer = question.answers_chosen[k];
-        if (!answer.is_correct) i += 1;
+        if (!answer.is_correct){
+          is_skip=true;
+          j=question.answers_chosen.length;
+        }
       }
+      if(is_skip) continue;
       if (question.answers_chosen.length === num_of_correct_questions)
         questions[i].num_passed+=1;
     }
@@ -109,7 +114,7 @@ const get_general_scores = (tests) => {
   let num_passed = 0;
   for (let i = 0; i < tests.length; i++) {
     const test_taken = tests[i];
-    sum += test_taken.grade;
+    sum += !isNaN(test_taken.grade)?test_taken.grade:0;
     if (test_taken.grade >= test_taken.test_id.passing_grade) num_passed++;
   }
   let passing_percentage = Math.round((num_passed / tests.length) * 100);

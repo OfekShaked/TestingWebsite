@@ -32,6 +32,7 @@ const ChooseQuestions = (props) => {
     const asyncFunc = async() => {
       //get all questions and set them in the table
       const res = await axios.get("Questions");
+      console.log(res.data);
       const rows = res.data.map(ques=>{return {
           ...ques,
           id:ques._id,

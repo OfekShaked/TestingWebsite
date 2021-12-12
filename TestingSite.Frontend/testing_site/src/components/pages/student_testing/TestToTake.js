@@ -7,6 +7,7 @@ import { EditorState, convertFromRaw } from "draft-js";
 import TestLoginForm from "./TestLoginForm";
 import TestQuestions from "./TestQuestions";
 import TestResults from "./TestResults";
+import StudentTestReport from "../reports/report_selection/student_report/StudentTestReport";
 
 const TestToTake = () => {
   const { id } = useParams();
@@ -46,7 +47,6 @@ const TestToTake = () => {
     const res = await axios.get(`Tests/tested/${id}`);
     if (res.status === 200 && res.data != null) {
       let testToLoad = res.data;
-      console.log(testToLoad);
       testToLoad.instructions_editors = EditorState.createWithContent(
         convertFromRaw(JSON.parse(testToLoad.instructions))
       );
@@ -63,13 +63,18 @@ const TestToTake = () => {
     }
   };
 
-  const finishTest = async() =>{
+  const finishTest = async(questions) =>{
     const testToSend = {...testTaken};
-    testToSend.test_questions=Object.values(testTaken.test_questions);
+    testToSend.test_questions = questions;
+    testToSend.test_questions=Object.values(testToSend.test_questions);
     const res = await axios.post("TestTaken",testToSend);
-    console.log(testToSend);
+    console.log(res.data);
     setTestTakenResults(res.data);
     setIsTestFinished(true);
+  }
+
+  const updateQuestions = async(value) =>{
+    await updateTestTakenProperty(["test_questions"],value);
   }
 
   useEffect(() => {loadTest()}, []);
@@ -78,11 +83,13 @@ const TestToTake = () => {
     <>
     {!isTestFinished?<>
         {testTaken.user===null?
-        <TestLoginForm  openNotification={openNotification} setUser={(value)=>updateTestTakenProperty(["user"],value)}/>:
+        <TestLoginForm  openNotification={openNotification} setUser={async(value)=>updateTestTakenProperty(["user"],value)}/>:
             <TestQuestions questions={test.questions} testName={test.name} testInstructions={test.instructions} testId={test._id}
-              updateQuestions={async(value)=>await updateTestTakenProperty(["test_questions"],value)} finishTest={finishTest}
+              updateQuestions={updateQuestions} finishTest={finishTest}
             />
-        }</>:<TestResults grade={testTakenResults.grade} numOfQuestions={test.questions.length} passingGrade={test.passing_grade}/>
+        }</>:<>
+        {testTakenResults.summary==null?<TestResults grade={testTakenResults.grade} numOfQuestions={test.questions.length} passingGrade={test.passing_grade}/>:
+        <StudentTestReport report={testTakenResults} />}</>
       }
       <ErrorNotification
         message={notificationError}

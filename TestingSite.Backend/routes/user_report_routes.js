@@ -18,6 +18,20 @@ router.get(
   })
 );
 
+// Get test report from by test id
+router.get(
+    "/test/:test_id",
+    asyncHandler(async (req, res) => {
+      try{
+      const data = await controller.get_user_test_report(req.params.test_id);
+      res.status(200).send(data);
+      }catch(err){
+        res.status(400).send(err);
+        logger.error(err);
+      }
+    })
+  );
+
 
 
 module.exports = router;
