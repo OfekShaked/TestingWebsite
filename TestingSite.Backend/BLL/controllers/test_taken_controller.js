@@ -1,5 +1,6 @@
 const TestTakenModel = require("../../models/test_taken");
 const user_controller = require("./user_controller");
+const test_controller = require("./test_controller");
 const test_taken_question_controller = require("./test_taken_questions_controller");
 const user_test_report_controller = require('./user_report_controller');
 const logger = require("../../logger");
@@ -26,6 +27,7 @@ class TestTakenService {
       await TestTakenModel.populate(test_taken_added,{path:"test_questions.answers_chosen", model: "Answer"});
       test_taken_added.grade = await calculate_grade(test_taken_added);
       await test_taken_added.save();
+      await test_controller.set_test_active(test_taken_added._id);
       if(test_taken_added.test_id.is_answer_shown){
         return user_test_report_controller.get_user_test_report(test_taken_added._id);
       }else{
@@ -38,6 +40,7 @@ class TestTakenService {
     }
   };
 }
+
 
 const add_user_and_questions = async (test_taken) => {
   const user_added = await user_controller.add_user(test_taken.user);
@@ -57,22 +60,22 @@ const add_user_and_questions = async (test_taken) => {
 const calculate_grade = async (test_taken) => {
   const score_for_question = 100 / test_taken.test_questions.length;
   let grade = 0;
-  for (let i = 0; i < test_taken.test_questions.length; i++) {
+  for (let i = 0; i < test_taken.test_questions.length; i++) { //loop questions
     const question = test_taken.test_questions[i];
     let num_of_correct_questions = 0;
     question.question_id.optional_answers.forEach((ans) => {
       if (ans.is_correct) num_of_correct_questions++;
     });
     let is_skip = false;
-    for (let j = 0; j < question.answers_chosen.length; j++) {
+    for (let j = 0; j < question.answers_chosen.length; j++) { //loop answers
       const answer = question.answers_chosen[j];
-      if (!answer.is_correct) {
+      if (!answer.is_correct) { //if answer is incorrect skip
         is_skip=true;
         j=question.answers_chosen.length;
       }
     }
     if(is_skip) continue;
-    if (question.answers_chosen.length === num_of_correct_questions)
+    if (question.answers_chosen.length === num_of_correct_questions) //add score if all correct
       grade += score_for_question;
   }
   return grade;

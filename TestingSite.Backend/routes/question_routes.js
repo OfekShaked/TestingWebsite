@@ -6,10 +6,10 @@ const logger = require("../logger")
 
 // Get questions from json
 router.get(
-  "/",
+  "/all/:topicId",
   asyncHandler(async (req, res) => {
     try{
-    const data = await controller.get_all_questions();
+    const data = await controller.get_all_questions(req.params.topicId);
     res.status(200).send(data);
     }catch(err){
       res.status(400).send(err);

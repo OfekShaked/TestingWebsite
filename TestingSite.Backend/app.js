@@ -12,8 +12,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const Urls = require("./settings/staticUrls");
 const Database = require("./DAL/mongo_context");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger-output.json');
 
 Database.connect('testing_site');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors());
 app.listen(Urls.serverPort, () =>
 {

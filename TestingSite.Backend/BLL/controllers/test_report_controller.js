@@ -7,50 +7,60 @@ class TestReportService {
    * @param {*} user
    * @returns
    */
-  get_test_report_by_date = async (start_date, end_date, test_id) => {
+  get_test_report_by_date = async (test_id, start_date, end_date) => {
     let startDate = Date.parse(start_date);
     let endDate = Date.parse(end_date);
-    const report = { summary: {}, grades: [], questions: [] };
-    const tests_to_create_report_on = await TestTakenModel.find({
+    const report = { summary: {}, grades: [], questions: [],tests:[] };
+    let tests_to_create_report_on = await TestTakenModel.find({
       test_id: test_id,
       createdAt: {
         $gt: startDate,
         $lt: endDate,
       },
     });
-    tests_to_create_report_on = await populate_test_report(tests_to_create_report_on);
-    report.summary = get_test_summary(tests_to_create_report_on,start_date, end_date);
+    if (tests_to_create_report_on.length > 0) {
+      tests_to_create_report_on = await populate_test_report(
+        tests_to_create_report_on
+      );
+      report.summary = get_test_summary(
+        tests_to_create_report_on,
+        start_date,
+        end_date
+      );
+      report.tests = tests_to_create_report_on;
+      report.question_statistics = get_question_statistics(
+        tests_to_create_report_on
+      );
+    }
+    return report;
+  };
+
+  get_test_report_by_id = async (test_id) => {
+    const report = { summary: {} };
+    let tests_to_create_report_on = await TestTakenModel.find({
+      test_id: test_id,
+    });
+    tests_to_create_report_on = await populate_test_report(
+      tests_to_create_report_on
+    );
+    report.summary = get_test_summary(tests_to_create_report_on, "", "");
     report.tests = tests_to_create_report_on;
     report.question_statistics = get_question_statistics(
       tests_to_create_report_on
     );
     return report;
   };
-
-  get_test_report_by_id = async(test_id) =>{
-    const report = { summary: {} };
-    let tests_to_create_report_on = await TestTakenModel.find({test_id:test_id});
-    tests_to_create_report_on = await populate_test_report(tests_to_create_report_on);
-    report.summary = get_test_summary(tests_to_create_report_on,"","");
-    report.tests = tests_to_create_report_on;
-    report.question_statistics = get_question_statistics(
-      tests_to_create_report_on
-    );
-    return report;
-  }
-
 }
-
 
 /**
  * get statistics about the questions
- * @param {*} tests_to_report list of TestTaken 
+ * @param {*} tests_to_report list of TestTaken
  * @returns object with question statistics
  */
 const get_question_statistics = (tests_to_report) => {
   let questions = [];
-  tests_to_report[0].test_id.questions.forEach((question)=>{
-    questions.push( {question:question,num_passed:0})
+  tests_to_report[0].test_id.questions.forEach((question) => {
+    questions.push({ question: question, num_passed: 0 });
   });
   for (let j = 0; j < tests_to_report.length; j++) {
     const test_taken = tests_to_report[j];
@@ -63,22 +73,24 @@ const get_question_statistics = (tests_to_report) => {
       let is_skip = false;
       for (let k = 0; k < question.answers_chosen.length; k++) {
         const answer = question.answers_chosen[k];
-        if (!answer.is_correct){
-          is_skip=true;
-          j=question.answers_chosen.length;
+        if (!answer.is_correct) {
+          is_skip = true;
+          j = question.answers_chosen.length;
         }
       }
-      if(is_skip) continue;
+      if (is_skip) continue;
       if (question.answers_chosen.length === num_of_correct_questions)
-        questions[i].num_passed+=1;
+        questions[i].num_passed += 1;
     }
   }
-  questions = questions.map((question=>{
-    let question_edit={...question};
-    question_edit.num_of_submissions=tests_to_report.length;
-    question_edit.answer_correct_percent=Math.round((question.num_passed / tests_to_report.length) * 100);
+  questions = questions.map((question) => {
+    let question_edit = { ...question };
+    question_edit.num_of_submissions = tests_to_report.length;
+    question_edit.answer_correct_percent = Math.round(
+      (question.num_passed / tests_to_report.length) * 100
+    );
     return question_edit;
-  }))
+  });
   return questions;
 };
 
@@ -114,7 +126,7 @@ const get_general_scores = (tests) => {
   let num_passed = 0;
   for (let i = 0; i < tests.length; i++) {
     const test_taken = tests[i];
-    sum += !isNaN(test_taken.grade)?test_taken.grade:0;
+    sum += !isNaN(test_taken.grade) ? test_taken.grade : 0;
     if (test_taken.grade >= test_taken.test_id.passing_grade) num_passed++;
   }
   let passing_percentage = Math.round((num_passed / tests.length) * 100);
@@ -122,13 +134,15 @@ const get_general_scores = (tests) => {
   return {
     num_passed,
     passing_percentage,
-    avg_score
+    avg_score,
   };
 };
 
-const populate_test_report = async(test_report) => {
-  await TestTakenModel.populate(test_report, {path:"test_id",populate:{path:'questions'}
-});
+const populate_test_report = async (test_report) => {
+  await TestTakenModel.populate(test_report, {
+    path: "test_id",
+    populate: { path: "questions" },
+  });
   await TestTakenModel.populate(test_report, "user");
   await TestTakenModel.populate(test_report, {
     path: "test_questions",
@@ -139,7 +153,10 @@ const populate_test_report = async(test_report) => {
       populate: { path: "optional_answers", model: "Answer" },
     },
   });
-  await TestTakenModel.populate(test_report,{path:"test_questions.answers_chosen", model: "Answer"});
+  await TestTakenModel.populate(test_report, {
+    path: "test_questions.answers_chosen",
+    model: "Answer",
+  });
   return test_report;
 };
 

@@ -23,7 +23,7 @@ const ManageQuestions = () => {
   useEffect(() => {
     const asyncFunc = async() => {
       //get all questions and set them in the table
-      const res = await axios.get("Questions");
+      const res = await axios.get(`Questions/all/${topicContext.topic._id}`);
       const rows = res.data.map(ques=>{return {
           ...ques,
           id:ques._id,

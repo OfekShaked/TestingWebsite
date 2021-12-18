@@ -20,7 +20,7 @@ const ManageTests = () =>{
     }
 
     const loadTests = async()=>{
-      const res = await axios.get("Tests");
+      const res = await axios.get(`Tests/all/${topicContext.topic._id}`);
       const rows = res.data.map(ques=>{return {
           ...ques,
           id:ques._id,

@@ -7,9 +7,9 @@ class QuestionService {
    *
    * @returns Array array of all questions
    */
-  get_all_questions = async () => {
+  get_all_questions = async (topic_id) => {
     try {
-      return await QuestionModel.find({})
+      return await QuestionModel.find({'topic_ids':{'$in':[topic_id]}})
         .populate("optional_answers")
         .populate("topic_ids");
     } catch (err) {
@@ -57,6 +57,10 @@ class QuestionService {
       logger.error(err);
     }
   };
+
+  set_question_active = async (question_id) => {
+    await QuestionModel.findByIdAndUpdate(question_id,{is_active:true});
+  }
 
   get_question_by_id = async (id) => {
     try {

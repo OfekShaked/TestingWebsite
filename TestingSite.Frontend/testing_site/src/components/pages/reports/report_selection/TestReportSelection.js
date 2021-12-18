@@ -32,7 +32,9 @@ const TestReportSelection = (props) => {
   const generateTestReport = async () => {
     if (selectedTest != null) {
       let res = null;
-      if (isChecked === false && dates[1] != null && dates[2] != null) {
+      console.log(isChecked);
+      console.log(dates);
+      if (isChecked === false && dates[0] != null && dates[1] != null) {
         res = await axios.get(
           `TestReport/${JSON.parse(selectedTest)._id}/${dates[0]}/${dates[1]}`
         );

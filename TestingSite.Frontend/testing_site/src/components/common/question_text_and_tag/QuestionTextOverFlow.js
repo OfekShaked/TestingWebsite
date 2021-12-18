@@ -2,15 +2,9 @@ import React from 'react';
 import {Typography, Popper,Paper} from '@mui/material'
 import './QuestionTextOverFlow.css'
 
-function isOverflown(element) {
-    return (
-      element.scrollHeight > element.clientHeight ||
-      element.scrollWidth > element.clientWidth
-    );
-  }
   
   const GridCellExpand = React.memo(function GridCellExpand(props) {
-    const { width, value, text } = props;
+    const { width, value, text,tags } = props;
     const wrapper = React.useRef(null);
     const cellDiv = React.useRef(null);
     const cellValue = React.useRef(null);
@@ -18,7 +12,7 @@ function isOverflown(element) {
     const [showFullCell, setShowFullCell] = React.useState(false);
     const [showPopper, setShowPopper] = React.useState(false);
     const handleMouseEnter = () => {
-      const isCurrentlyOverflown = text.length>50||value.tags.length>50;
+      const isCurrentlyOverflown = text.length>50||value?.tags?.length>50||tags?.length>50;
       setShowPopper(isCurrentlyOverflown);
       setAnchorEl(cellDiv.current);
       setShowFullCell(true);

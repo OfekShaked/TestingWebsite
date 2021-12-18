@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const Home = () => {
-  const [title, setTitle] = useState("Home");
+  const [title, setTitle] = useState("Administration System - Test");
   return (
       <Box sx={{ flexGrow: 1, width: "100%" }}>
         <AppBar position="static">

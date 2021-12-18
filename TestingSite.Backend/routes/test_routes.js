@@ -6,10 +6,10 @@ const logger = require("../logger")
 
 // Get tests from json
 router.get(
-  "/",
+  "/all/:topicId",
   asyncHandler(async (req, res) => {
      try{
-    const data = await controller.get_all_tests();
+    const data = await controller.get_all_tests(req.params.topicId);
     if(data!==null){
       res.status(200).send(data);}
       else{

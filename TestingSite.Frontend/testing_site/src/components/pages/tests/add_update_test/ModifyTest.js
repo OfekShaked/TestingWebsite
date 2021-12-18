@@ -23,6 +23,7 @@ const ModifyTest = () => {
   const topicContext = useContext(TopicContext);
   const { id } = useParams();
   const [notificationError,setNotificationError,isNotificationOpen,setIsNotificationOpen] = useErrorNotification();
+  const [questionsToDisplay,setQuestionsToDisplay] = useState([]);
   const [test, setTest] = useState({
     topic_id: topicContext.topic._id,
     language: "English",
@@ -62,12 +63,11 @@ const ModifyTest = () => {
       const res = await axios.get(`Tests/${id}`);
       if (res.status === 200 && res.data != null) {
         let testToLoad = res.data;
-        console.log(testToLoad);
         testToLoad.instructions = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.instructions)));
         testToLoad.success_text= EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.success_text)));
         testToLoad.failed_text = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.failed_text)));
-        console.log(testToLoad);
         setTest(testToLoad);
+        setQuestionsToDisplay(testToLoad.questions);
       }else{
         openNotification("Server error please reload and try again");
         return;
@@ -237,7 +237,7 @@ const ModifyTest = () => {
           </FormField>
           <PredefinedTemplates/>
           <Divider>Questions</Divider>
-          <ChooseQuestions updateQuestions={updateQuestions} questions={test.questions}/>
+          <ChooseQuestions updateQuestions={updateQuestions} questions={test.questions} questionsToDisplay={questionsToDisplay}/>
           <Actions save={saveTest}/>
         </Stack>
       </Paper>
