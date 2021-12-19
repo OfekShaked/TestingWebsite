@@ -25,14 +25,15 @@ import QuestionModal from "../question_view/QuestionModal";
 import useModal from "../../../../hooks/useModal/useModal";
 import useTextEditor from "../../../../hooks/useTextEditor/useTextEditor";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
-import ErrorNotification from "../../../common/error_notification/ErrorNotification";
-import useErrorNotification from "../../../../hooks/useErrorNotification/useErrorNotification";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
+import {logError} from "../../../../services/logger";
+import {ErrorNotificationContext} from "../../../../contexts/ErrorNotificationContext";
 
 const ModifyQuestion = (props) => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const setErrorMesssage = useContext(ErrorNotificationContext);
   const [typeValue, onTypeValueChange] = useSelect("");
   const tagsField = useTextFieldList("");
   const [
@@ -52,12 +53,6 @@ const ModifyQuestion = (props) => {
   const topicContext = useContext(TopicContext);
   const [questionOpen, handleQuestionOpen, handleQuestionClose] = useModal();
   const [questionToShow, setQuestionToShow] = useState({});
-  const [
-    notificationError,
-    setNotificationError,
-    isNotificationOpen,
-    setIsNotificationOpen,
-  ] = useErrorNotification();
 
   const changeOrientation = (orientation) => {
     setOrientation(orientation);
@@ -81,16 +76,26 @@ const ModifyQuestion = (props) => {
         topic_ids: [topicContext.topic._id],
       };
       if (id === "add") {
+        try{
         const res = await axios.post("questions", questionToSend);
         if (res.status !== 200)
-          openNotification("Cannot add question atm please try again");
+          setErrorMesssage("Cannot add question atm please try again");
         else navigate("/questions/manage");
+        }catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when adding question try again later");
+        }
       } else {
         questionToSend._id = id;
+        try{
         const res = await axios.put("questions", questionToSend);
         if (res.status !== 200)
-          openNotification("Cannot update question atm please try again");
+        setErrorMesssage("Cannot update question atm please try again");
         else navigate("/questions/manage");
+        } catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when updating question try again later");
+        }
       }
     }
   };
@@ -103,14 +108,19 @@ const ModifyQuestion = (props) => {
   const loadQuestion = async () => {
     //load question by id from server to client
     if (id !== "add") {
+      try{
       const res = await axios.get(`Questions/${id}`);
       if (res.status === 200 && res.data != null) {
         let question = res.data;
         setQuestionData(question);
       } else {
-        openNotification("Server error please reload and try again");
+        setErrorMesssage("Server error please reload and try again");
         return;
       }
+    }catch(err){
+      logError(err);
+      setErrorMesssage("Unknown error when loading question try again later")
+    }
     }
   };
   const setQuestionData = (question) => {
@@ -159,29 +169,26 @@ const ModifyQuestion = (props) => {
     //Validation before save or update
     const question_recieved = getQuestion();
     if (question_recieved.type === "") {
-      openNotification("Type is empty");
+      setErrorMesssage("Type is empty");
       return false;
     }
     if (JSON.parse(question_recieved.text).blocks[0].text.length < 2) {
-      openNotification(
+      setErrorMesssage(
         "Question text cannot be empty or smaller than 2 characters"
       );
       return false;
     }
     if (question_recieved.optional_answers.length < 2) {
-      openNotification("There must be atleast 2 answers added");
+      setErrorMesssage("There must be atleast 2 answers added");
       return false;
     }
     for (let i = 0; i < question_recieved.optional_answers.length; i++) {
       if (question_recieved.optional_answers[i].is_correct === true) return true;
     }
-    openNotification("There must be atleast 1 correct answer!");
+    setErrorMesssage("There must be atleast 1 correct answer!");
     return false;
   };
-  const openNotification = (message) => {
-    setIsNotificationOpen(true);
-    setNotificationError(message);
-  };
+
   useEffect(() => {
     loadQuestion();
   }, []);
@@ -259,11 +266,6 @@ const ModifyQuestion = (props) => {
         open={questionOpen}
         handleClose={handleQuestionClose}
         question={questionToShow}
-      />
-      <ErrorNotification
-        message={notificationError}
-        open={isNotificationOpen}
-        setOpen={setIsNotificationOpen}
       />
     </>
   );

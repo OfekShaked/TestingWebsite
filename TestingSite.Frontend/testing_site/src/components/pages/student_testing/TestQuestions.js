@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import Question from "./questions/Question";
 import TestInstructions from "./TestInstructions";
 import { Stack, Typography } from "@mui/material";
@@ -9,13 +9,11 @@ const TestQuestions = (props) => {
   const [isStarted, setIsStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [testTakenQuestions, setTestTakenQuestions] = useState({});
-  const [questionsToShow,setQuestionsToShow] = useState([]);
 
   const handleTestTakenQuestionChange = (questionTaken) => {
       //handle what happens when a test question has changed its value
     const testTakenQuestionsToUpdate = { ...testTakenQuestions };
     testTakenQuestionsToUpdate[currentQuestionIndex] = questionTaken;
-    console.log(testTakenQuestionsToUpdate);
     setTestTakenQuestions(testTakenQuestionsToUpdate);
   };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {Stack} from '@mui/material'
 import {ArrowBack, Check,Clear} from '@mui/icons-material';
 import './Answer.css';
-import TextEditorToHtml from '../../../../../common/texteditor_to_html/TextEditorToHtml'
+import TextEditorToHtml from '../../../../common/texteditor_to_html/TextEditorToHtml';
 
 const Answer = (props) => {
 

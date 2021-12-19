@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import MainRouter from "../routers/MainRouter";
-import {BrowserRouter} from 'react-router-dom'
 import "./Home.css";
 import {
   AppBar,
   Box,
   Typography,
-  ImageList,
-  ImageListItem,
-  Container,
 } from "@mui/material";
 
 const Home = () => {

@@ -1,10 +1,9 @@
 import React from "react";
 import { Stack, Typography, Grid } from "@mui/material";
-import FormField from "../../../../common/form_field/FormField";
+import FormField from "../../../common/form_field/FormField";
 import GradesAndAnswers from "./GradesAndAnswers";
 import QuestionStatistics from "./QuestionStatistics";
 import "./TestReport.css";
-import { useEffect } from "react";
 
 const TestReport = (props) => {
   let { report } = props;

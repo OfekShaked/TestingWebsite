@@ -1,6 +1,6 @@
 import React from 'react';
-import CommonTable from '../../../../common/table/CommonTable';
-import QuestionTextOverFlow from '../../../../common/question_text_and_tag/QuestionTextOverFlow';
+import CommonTable from '../../../common/table/CommonTable';
+import QuestionTextOverFlow from '../../../common/question_text_and_tag/QuestionTextOverFlow';
 
 const QuestionStatistics = (props) =>{
     const {questions} = props;

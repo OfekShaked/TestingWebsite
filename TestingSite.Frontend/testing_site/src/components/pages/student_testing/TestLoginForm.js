@@ -1,8 +1,10 @@
-import React,{useState} from 'react';
+import React,{useState,useContext} from 'react';
 import {Typography,Container,CssBaseline,Box,TextField,Button} from '@mui/material';
+import {ErrorNotificationContext} from '../../../contexts/ErrorNotificationContext'
 import './TestLoginForm.css';
 
 const TestLoginForm = (props) =>{
+    const setErrorMesssage = useContext(ErrorNotificationContext);
     const [user,setUser] = useState({
         email:'',
         name:{
@@ -20,15 +22,15 @@ const TestLoginForm = (props) =>{
     const isUserValid = () =>{
       //checks if user is valid and add error if not
       if(user.email===""){
-        props.openNotification("Email cannot be empty");
+        setErrorMesssage("Email cannot be empty");
         return false;
       }
       if(user.name.first===""){
-        props.openNotification("First name cannot be empty");
+        setErrorMesssage("First name cannot be empty");
         return false;
       }
       if(user.name.last===""){
-        props.openNotification("Last name cannot be empty");
+        setErrorMesssage("Last name cannot be empty");
         return false;
       }
       return true;

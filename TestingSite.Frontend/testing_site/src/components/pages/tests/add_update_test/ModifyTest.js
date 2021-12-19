@@ -1,4 +1,4 @@
-import React, { useContext, useState,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import FormField from "../../../common/form_field/FormField";
 import { TopicContext } from "../../../../contexts/TopicContext";
 import { TextField, Checkbox, Paper, Stack, Divider } from "@mui/material";
@@ -7,23 +7,22 @@ import SelectChoices from "../../../common/select_choices/SelectChoices";
 import TextEditor from "../../../common/text_editor/TextEditor";
 import EmailDelieveryStatus from "./EmailDeliveryStatus";
 import ChooseQuestions from "./choose_questions/ChooseQuestions";
-import { EditorState, convertFromRaw,convertToRaw } from "draft-js";
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import PredefinedTemplates from "./PredefinedTemplates";
 import Actions from "./Actions";
 import { useParams } from "react-router-dom";
-import useErrorNotification from "../../../../hooks/useErrorNotification/useErrorNotification"; 
-import ErrorNotification from "../../../common/error_notification/ErrorNotification";
+import { ErrorNotificationContext } from "../../../../contexts/ErrorNotificationContext";
+import { logError } from "../../../../services/logger";
 import axios from "axios";
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import "./ModifyTest.css";
-
 
 const ModifyTest = () => {
   const navigate = useNavigate();
   const topicContext = useContext(TopicContext);
+  const setErrorMesssage = useContext(ErrorNotificationContext);
   const { id } = useParams();
-  const [notificationError,setNotificationError,isNotificationOpen,setIsNotificationOpen] = useErrorNotification();
-  const [questionsToDisplay,setQuestionsToDisplay] = useState([]);
+  const [questionsToDisplay, setQuestionsToDisplay] = useState([]);
   const [test, setTest] = useState({
     topic_id: topicContext.topic._id,
     language: "English",
@@ -54,75 +53,99 @@ const ModifyTest = () => {
     setTest(testToUpdate);
   };
 
-  const updateQuestions = (questions) =>{
-    updateTestProperty(["questions"],questions);
-  }
+  const updateQuestions = (questions) => {
+    updateTestProperty(["questions"], questions);
+  };
 
-  const loadTest = async() =>{
-    if(id !== "add"){
-      const res = await axios.get(`Tests/${id}`);
-      if (res.status === 200 && res.data != null) {
-        let testToLoad = res.data;
-        testToLoad.instructions = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.instructions)));
-        testToLoad.success_text= EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.success_text)));
-        testToLoad.failed_text = EditorState.createWithContent(convertFromRaw(JSON.parse(testToLoad.failed_text)));
-        setTest(testToLoad);
-        setQuestionsToDisplay(testToLoad.questions);
-      }else{
-        openNotification("Server error please reload and try again");
-        return;
+  const loadTest = async () => {
+    if (id !== "add") {
+      try {
+        const res = await axios.get(`Tests/${id}`);
+        if (res.status === 200 && res.data != null) {
+          let testToLoad = res.data;
+          testToLoad.instructions = EditorState.createWithContent(
+            convertFromRaw(JSON.parse(testToLoad.instructions))
+          );
+          testToLoad.success_text = EditorState.createWithContent(
+            convertFromRaw(JSON.parse(testToLoad.success_text))
+          );
+          testToLoad.failed_text = EditorState.createWithContent(
+            convertFromRaw(JSON.parse(testToLoad.failed_text))
+          );
+          setTest(testToLoad);
+          setQuestionsToDisplay(testToLoad.questions);
+        } else {
+          setErrorMesssage("Server error please reload and try again");
+          return;
+        }
+      } catch (err) {
+        logError(err);
+        setErrorMesssage("Unknown error while loading test");
       }
     }
-  }
+  };
 
-  const saveTest = async() =>{
-    if(isTestValid()){
-      const testToSave = {...test};
-      testToSave.instructions = JSON.stringify(convertToRaw(test.instructions.getCurrentContent()));
-      testToSave.success_text = JSON.stringify(convertToRaw(test.success_text.getCurrentContent()));
-      testToSave.failed_text = JSON.stringify(convertToRaw(test.failed_text.getCurrentContent()));
+  const saveTest = async () => {
+    if (isTestValid()) {
+      const testToSave = { ...test };
+      testToSave.instructions = JSON.stringify(
+        convertToRaw(test.instructions.getCurrentContent())
+      );
+      testToSave.success_text = JSON.stringify(
+        convertToRaw(test.success_text.getCurrentContent())
+      );
+      testToSave.failed_text = JSON.stringify(
+        convertToRaw(test.failed_text.getCurrentContent())
+      );
       if (id === "add") {
-        const res = await axios.post("tests", testToSave);
-        if(res.status!==200) openNotification("Cannot add test atm please try again");
-        else navigate("/tests/manage")
+        try {
+          const res = await axios.post("tests", testToSave);
+          if (res.status !== 200)
+            setErrorMesssage("Cannot add test atm please try again");
+          else navigate("/tests/manage");
+        } catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when saving new test");
+        }
       } else {
         test._id = id;
-        const res = await axios.put("tests", testToSave);
-        if(res.status!==200) openNotification("Cannot update test atm please try again");
-        else navigate("/tests/manage")
+        try {
+          const res = await axios.put("tests", testToSave);
+          if (res.status !== 200)
+            setErrorMesssage("Cannot update test atm please try again");
+          else navigate("/tests/manage");
+        } catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when updating test");
+        }
       }
     }
-  }
+  };
 
-  const openNotification = (message) =>{
-    setIsNotificationOpen(true);
-      setNotificationError(message);
-  }
-
-  const isTestValid = ()=>{
+  const isTestValid = () => {
     //Validation before save or update
-    if(test.name==="") {
-      openNotification("Test Name is empty");
+    if (test.name === "") {
+      setErrorMesssage("Test Name is empty");
       return false;
     }
-    if(isNaN(test.passing_grade)){
-      openNotification("Test passing grade cannot be empty or not a number");
+    if (isNaN(test.passing_grade)) {
+      setErrorMesssage("Test passing grade cannot be empty or not a number");
       return false;
     }
-    if(test.passing_grade<0||test.passing_grade>100){
-      openNotification("Test passing grade must be 0-100");
+    if (test.passing_grade < 0 || test.passing_grade > 100) {
+      setErrorMesssage("Test passing grade must be 0-100");
       return false;
     }
-    if(test.questions.length<1){
-      openNotification("There must be atleast 1 question added");
+    if (test.questions.length < 1) {
+      setErrorMesssage("There must be atleast 1 question added");
       return false;
     }
     return true;
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     loadTest();
-  },[])
+  }, []);
 
   return (
     <>
@@ -159,7 +182,9 @@ const ModifyTest = () => {
               id="tag-grade"
               label="Passing Grade"
               value={test.passing_grade}
-              onChange={(e) => updateTestProperty(["passing_grade"], e.target.value)}
+              onChange={(e) =>
+                updateTestProperty(["passing_grade"], e.target.value)
+              }
             />
           </FormField>
           <FormField field={"Show Correct Answers After Submission"}>
@@ -181,7 +206,7 @@ const ModifyTest = () => {
           </FormField>
           <FormField field={"Message to show on success"}>
             <TextEditor
-              setValue={() =>{}}
+              setValue={() => {}}
               setEditorValue={(value) =>
                 updateTestProperty(["success_text"], value)
               }
@@ -190,7 +215,7 @@ const ModifyTest = () => {
           </FormField>
           <FormField field={"Message to show on failure"}>
             <TextEditor
-              setValue={() =>{}}
+              setValue={() => {}}
               setEditorValue={(value) =>
                 updateTestProperty(["failed_text"], value)
               }
@@ -235,13 +260,16 @@ const ModifyTest = () => {
               }
             />
           </FormField>
-          <PredefinedTemplates/>
+          <PredefinedTemplates />
           <Divider>Questions</Divider>
-          <ChooseQuestions updateQuestions={updateQuestions} questions={test.questions} questionsToDisplay={questionsToDisplay}/>
-          <Actions save={saveTest}/>
+          <ChooseQuestions
+            updateQuestions={updateQuestions}
+            questions={test.questions}
+            questionsToDisplay={questionsToDisplay}
+          />
+          <Actions save={saveTest} />
         </Stack>
       </Paper>
-      <ErrorNotification message={notificationError} open={isNotificationOpen} setOpen={setIsNotificationOpen}/>
     </>
   );
 };

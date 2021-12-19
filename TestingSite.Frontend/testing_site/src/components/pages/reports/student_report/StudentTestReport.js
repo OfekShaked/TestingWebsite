@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { Stack, Typography, Grid } from "@mui/material";
-import FormField from "../../../../common/form_field/FormField";
+import FormField from "../../../common/form_field/FormField";
 import { useParams } from "react-router-dom";
 import QuestionsTable from "./questions_table/QuestionsTable";
+import {logError} from '../../../../services/logger';
+import {ErrorNotificationContext} from '../../../../contexts/ErrorNotificationContext';
 
 const StudentTestReport = (props) => {
   const [report, setReport] = useState(null);
   const { id } = useParams();
+  const setErrorMesssage = useContext(ErrorNotificationContext);
 
   useEffect(() => {
     loadReport();
@@ -15,11 +18,15 @@ const StudentTestReport = (props) => {
 
   const loadReport = async () => {
     if (props.report == null) {
+      try{
       const res = await axios.get(`UserReport/test/${id}`);
       if (res.data != null && res.status === 200) {
         setReport(res.data);
-        console.log(res.data);
       }
+    }catch (err) {
+      logError(err);
+      setErrorMesssage("Unknmown error loading report from the server")
+    }
     } else setReport(props.report);
   };
 

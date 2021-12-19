@@ -5,11 +5,14 @@ import RedirectOnEmptyTopic from '../../../common/redirect_conditions/RedirectOn
 import {Paper,Typography} from '@mui/material'
 import Actions from './Actions';
 import { TopicContext } from "../../../../contexts/TopicContext";
+import {ErrorNotificationContext} from "../../../../contexts/ErrorNotificationContext";
+import { logError } from '../../../../services/logger';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
 const ManageTests = () =>{
     const topicContext = useContext(TopicContext);
+    const setErrorMesssage = useContext(ErrorNotificationContext);
     const navigate = useNavigate();
     const [tests,setTests] = useState([]);
 
@@ -20,12 +23,21 @@ const ManageTests = () =>{
     }
 
     const loadTests = async()=>{
+      try{
       const res = await axios.get(`Tests/all/${topicContext.topic._id}`);
+      if(res.status===200&&res.data!=null){
       const rows = res.data.map(ques=>{return {
           ...ques,
           id:ques._id,
         }})
       setTests(rows);
+      }else{
+        setErrorMesssage("Cannot load tests");
+      }
+    }catch(err){
+      logError(err);
+      setErrorMesssage("Cannot connect to the server atm please try again");
+    }
     }
 
     const editTest = (testToEdit) =>{

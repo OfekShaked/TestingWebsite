@@ -11,7 +11,7 @@ import {
   Box,
   CardHeader,
   FormGroup,
-  FormControlLabel
+  FormControlLabel,
 } from "@mui/material";
 import SelectChoices from "../../../common/select_choices/SelectChoices";
 import FormField from "../../../common/form_field/FormField";
@@ -20,6 +20,8 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import useSelect from "../../../../hooks/useSelectValue/useSelect";
 import axios from "axios";
 import { TopicContext } from "../../../../contexts/TopicContext";
+import { logError } from "../../../../services/logger";
+import { ErrorNotificationContext } from "../../../../contexts/ErrorNotificationContext";
 
 const TestReportSelection = (props) => {
   const { setIsTestReportStarted, setReport, backClick } = props;
@@ -28,20 +30,29 @@ const TestReportSelection = (props) => {
   const [dates, setDates] = useState([null, null]);
   const [isChecked, setIsChecked] = useState(false);
   const topicContext = useContext(TopicContext);
+  const setErrorMesssage = useContext(ErrorNotificationContext);
 
   const generateTestReport = async () => {
     if (selectedTest != null) {
       let res = null;
-      console.log(isChecked);
-      console.log(dates);
       if (isChecked === false && dates[0] != null && dates[1] != null) {
-        res = await axios.get(
-          `TestReport/${JSON.parse(selectedTest)._id}/${dates[0]}/${dates[1]}`
-        );
+        try {
+          res = await axios.get(
+            `TestReport/${JSON.parse(selectedTest)._id}/${dates[0]}/${dates[1]}`
+          );
+        } catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when getting report by dates");
+        }
       } else {
-        res = await axios.get(`TestReport/${JSON.parse(selectedTest)._id}`);
+        try {
+          res = await axios.get(`TestReport/${JSON.parse(selectedTest)._id}`);
+        } catch (err) {
+          logError(err);
+          setErrorMesssage("Unknown error when getting report by test");
+        }
       }
-      if (res.status !== 200 || res.data == null) {
+      if (res == null || res.status !== 200 || res.data == null) {
       } else {
         if (res.data.tests.length > 0) {
           res.data.tests = res.data.tests.map((test) => {
@@ -60,12 +71,17 @@ const TestReportSelection = (props) => {
   };
 
   const loadTests = async () => {
-    const res = await axios.get(`Tests/names/${topicContext.topic._id}`);
-    if (res.data.length > 0) {
-      let test_choices = res.data.map((test) => {
-        return { value: JSON.stringify(test), text: test.name };
-      });
-      setTests(test_choices);
+    try {
+      const res = await axios.get(`Tests/names/${topicContext.topic._id}`);
+      if (res.status === 200 && res.data != null && res.data.length > 0) {
+        let test_choices = res.data.map((test) => {
+          return { value: JSON.stringify(test), text: test.name };
+        });
+        setTests(test_choices);
+      }
+    } catch (err) {
+      logError(err);
+      setErrorMesssage("Unknown error when loading tests");
     }
   };
 
@@ -76,7 +92,7 @@ const TestReportSelection = (props) => {
   return (
     <>
       <Card variant="outlined">
-          <CardHeader title="Report by Test"/>
+        <CardHeader title="Report by Test" />
         <CardContent>
           <FormField field={"Select Test"}>
             <SelectChoices
@@ -106,7 +122,15 @@ const TestReportSelection = (props) => {
                 />
                 <Typography>Or</Typography>
                 <FormGroup>
-                <FormControlLabel control={<Checkbox checked={isChecked} onChange={(e)=>setIsChecked(e.target.checked)} />} label="Any date"/>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isChecked}
+                        onChange={(e) => setIsChecked(e.target.checked)}
+                      />
+                    }
+                    label="Any date"
+                  />
                 </FormGroup>
               </LocalizationProvider>
             </Stack>

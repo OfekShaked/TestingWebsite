@@ -1,6 +1,6 @@
 import React from "react";
-import CommonTable from "../../../../common/table/CommonTable";
-import ActionButton from "../../../../common/action_button/ActionButton";
+import CommonTable from "../../../common/table/CommonTable";
+import ActionButton from "../../../common/action_button/ActionButton";
 
 const GradesAndAnswers = (props) => {
   

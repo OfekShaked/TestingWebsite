@@ -7,7 +7,7 @@ import ManageTests from '../pages/tests/manage_tests/ManageTests';
 import ModifyTest from '../pages/tests/add_update_test/ModifyTest';
 import TestToTake from '../pages/student_testing/TestToTake';
 import ReportSelection from '../pages/reports/report_selection/ReportSelection';
-import StudentTestReport from '../pages/reports/report_selection/student_report/StudentTestReport';
+import StudentTestReport from '../pages/reports/student_report/StudentTestReport';
 
 
 const MainRouter = () =>{
