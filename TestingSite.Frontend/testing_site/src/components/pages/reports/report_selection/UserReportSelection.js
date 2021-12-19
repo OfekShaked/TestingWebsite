@@ -46,7 +46,9 @@ const UserReportSelection = (props) =>{
     const calculateAvgGrade = (tests) =>{
         let sum = 0;
         tests.forEach(test=>{
+            if(!isNaN(test.grade)){
             sum+=test.grade;
+            }
         })
         setAvgGrade(sum/tests.length);
     }

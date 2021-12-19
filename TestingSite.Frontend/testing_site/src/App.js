@@ -1,10 +1,12 @@
 import logo from "./logo.svg";
 import "./App.css";
 import Home from "./components/home/Home";
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { TopicContext } from "./contexts/TopicContext";
+import { ErrorNotificationContext } from "./contexts/ErrorNotificationContext";
 import axios from "axios";
+import ErrorNotification from "./components/common/error_notification/ErrorNotification";
 
 axios.defaults.baseURL = "http://localhost:4000/api/";
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -32,13 +34,23 @@ axios.interceptors.response.use(
 );
 
 function App() {
-  const [topic,setTopic] = useState({});
-  const value = {topic,setTopic};
+  const [topic, setTopic] = useState({});
+  const topicValue = { topic, setTopic };
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const setErrorMessage = (message) =>{
+    setMessage(message);
+    setOpen(true);
+  }
+  const errorValue = {setErrorMessage};
   return (
-    <TopicContext.Provider value={value}>
-      <BrowserRouter>
-        <Home />
-      </BrowserRouter>
+    <TopicContext.Provider value={topicValue}>
+      <ErrorNotificationContext.Provider value={errorValue}>
+        <BrowserRouter>
+          <Home />
+          <ErrorNotification message={message} open={open} setOpen={setOpen} />
+        </BrowserRouter>
+      </ErrorNotificationContext.Provider>
     </TopicContext.Provider>
   );
 }

@@ -85,7 +85,7 @@ class TestService {
         model: "Question",
         populate: { path: "optional_answers", model: "Answer" },
       });
-      await set_questions_active(test_model.questions);
+      await set_questions_active(test_added.questions);
       return test_added;
     } catch (err) {
       logger.error(err);
@@ -131,6 +131,7 @@ class TestService {
   }
 }
 
+//set questions to active after they appear in a test
 const set_questions_active = async (questions) =>{
   for (let index = 0; index < questions.length; index++) {
     const question = questions[index];
@@ -138,6 +139,7 @@ const set_questions_active = async (questions) =>{
   }
 }
 
+//decrement all questions test count before updating a test
 const decrement_previous_questions_tests = async (test_id) => {
   try {
     const test_found = await TestModel.findById(test_id);
@@ -149,6 +151,7 @@ const decrement_previous_questions_tests = async (test_id) => {
   }
 };
 
+//increment test count for every question that appears in a test
 const increment_test_question_count = async (questions) => {
   for (const question_id of questions) {
     await questionController.increment_test_count(question_id);

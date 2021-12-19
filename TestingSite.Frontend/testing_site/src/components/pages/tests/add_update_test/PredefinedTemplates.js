@@ -2,7 +2,7 @@ import React from 'react';
 import {Typography,Stack} from '@mui/material';
 
 const PredefinedTemplates = () =>{
-    const templates = ["@TestName@","@FirstName@","@LastName@","@Date@","@OrgEmail@","@Grade@","@OrgName@","@CertificateURL@"];
+    const templates = ["@TestName@","@FirstName@","@LastName@","@Date@","@Grade@","@CertificateURL@"];
     const copyToClipboard = (text) =>{
         navigator.clipboard.writeText(text);
     }

@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const logger = require("../../logger");
 
 class EmailService {
   constructor() {
@@ -26,7 +27,11 @@ class EmailService {
         },
       };
     }
+    try{
     this.transporter = nodemailer.createTransport(mailConfig);
+    }catch(err){
+      logger.error(err);
+    }
   };
 
   send_email = (sender, reciever, subject, message) => {
@@ -39,7 +44,7 @@ class EmailService {
 
     this.transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.log(error);
+        logger.error(error);
       } else {
         console.log("Email sent: " + info.response);
         console.log("Preview URL: " + nodemailer.getTestMessageUrl(info));

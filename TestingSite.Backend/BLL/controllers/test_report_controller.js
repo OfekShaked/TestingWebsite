@@ -75,7 +75,7 @@ const get_question_statistics = (tests_to_report) => {
         const answer = question.answers_chosen[k];
         if (!answer.is_correct) {
           is_skip = true;
-          j = question.answers_chosen.length;
+          k = question.answers_chosen.length;
         }
       }
       if (is_skip) continue;

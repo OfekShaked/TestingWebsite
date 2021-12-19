@@ -1,6 +1,7 @@
 const DBManager = require("./db_manager");
 const organizationController = require("../BLL/controllers/organization_controller");
 const OrganizationModel = require('../models/organization');
+const defaultData = require('./default_data'); 
 
 const dbman = new DBManager();
 
@@ -10,9 +11,10 @@ afterAll(async () => {
   });
 beforeAll(async () => {
   await dbman.start()
-  await OrganizationModel.create({name:"organ1"});
-  await OrganizationModel.create({name:"organ2"});
-  await OrganizationModel.create({name:"organ3"});
+  let organizations = defaultData.get_default_organizations();
+  await OrganizationModel.create(organizations[0]);
+  await OrganizationModel.create(organizations[1]);
+  await OrganizationModel.create(organizations[2]);
 });
 
 it("can get all organizations successfully", async () => {
