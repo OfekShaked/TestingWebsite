@@ -17,7 +17,7 @@ import { logError } from "../../../../services/logger";
 const ManageQuestions = () => {
   const navigate = useNavigate();
   const topicContext = useContext(TopicContext);
-  const errorNotificationContext = useContext(ErrorNotificationContext);
+  const setErrorMesssage = useContext(ErrorNotificationContext);
   const [questions, setQuestions] = useState([]);
   const [questionSelected, setQuestionSelected] = useState(null);
   const [questionOpen, handleQuestionOpen, handleQuestionClose] = useModal();
@@ -25,28 +25,32 @@ const ManageQuestions = () => {
   useEffect(() => {
     const asyncFunc = async () => {
       //get all questions and set them in the table
-      try {
-        const res = await axios.get(`Questions/all/${topicContext.topic._id}`);
-        if (res.status === 200) {
-          const rows = res.data.map((ques) => {
-            return {
-              ...ques,
-              id: ques._id,
-              text: JSON.parse(ques.text).blocks[0].text,
-              text_edited: ques.text,
-            };
-          });
-          setQuestions(rows);
-        } else {
-          errorNotificationContext.setErrorMesssage(
-            "Cannot get all questions atm please try again later."
+      if (topicContext?.topic?._id != null) {
+        try {
+          const res = await axios.get(
+            `Questions/all/${topicContext.topic._id}`
+          );
+          if (res.status === 200) {
+            const rows = res.data.map((ques) => {
+              return {
+                ...ques,
+                id: ques._id,
+                text: JSON.parse(ques.text).blocks[0].text,
+                text_edited: ques.text,
+              };
+            });
+            setQuestions(rows);
+          } else {
+            setErrorMesssage(
+              "Cannot get all questions atm please try again later."
+            );
+          }
+        } catch (err) {
+          logError(err);
+          setErrorMesssage(
+            "Connection to server is lost please contact owners or try again"
           );
         }
-      } catch (err) {
-        logError(err);
-        errorNotificationContext.setErrorMesssage(
-          "Connection to server is lost please contact owners or try again"
-        );
       }
     };
     asyncFunc();

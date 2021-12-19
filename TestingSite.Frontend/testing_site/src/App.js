@@ -42,10 +42,9 @@ function App() {
     setMessage(message);
     setOpen(true);
   }
-  const errorValue = {setErrorMessage};
   return (
     <TopicContext.Provider value={topicValue}>
-      <ErrorNotificationContext.Provider value={errorValue}>
+      <ErrorNotificationContext.Provider value={setErrorMessage}>
         <BrowserRouter>
           <Home />
           <ErrorNotification message={message} open={open} setOpen={setOpen} />

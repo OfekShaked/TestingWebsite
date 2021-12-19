@@ -1,7 +1,6 @@
 import React,{useState,useEffect,useContext} from 'react';
 import {Paper, MenuList, MenuItem,Select,FormControl, InputLabel,Divider,Typography} from '@mui/material'
 import './MainPage.css'
-import useSelect from '../../../hooks/useSelectValue/useSelect';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 import {TopicContext} from '../../../contexts/TopicContext';

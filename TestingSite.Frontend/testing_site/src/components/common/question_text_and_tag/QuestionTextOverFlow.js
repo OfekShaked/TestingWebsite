@@ -12,7 +12,7 @@ import './QuestionTextOverFlow.css'
     const [showFullCell, setShowFullCell] = React.useState(false);
     const [showPopper, setShowPopper] = React.useState(false);
     const handleMouseEnter = () => {
-      const isCurrentlyOverflown = text.length>50||value?.tags?.length>50||tags?.length>50;
+      const isCurrentlyOverflown = text?.length>50||value?.tags?.length>50||tags?.length>50;
       setShowPopper(isCurrentlyOverflown);
       setAnchorEl(cellDiv.current);
       setShowFullCell(true);
