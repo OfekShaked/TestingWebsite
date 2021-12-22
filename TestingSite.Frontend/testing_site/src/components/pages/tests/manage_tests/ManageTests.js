@@ -9,6 +9,7 @@ import {ErrorNotificationContext} from "../../../../contexts/ErrorNotificationCo
 import { logError } from '../../../../services/logger';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import DateProvider from '../../../common/date_provider/DateProvider';
 
 const ManageTests = () =>{
     const topicContext = useContext(TopicContext);
@@ -64,7 +65,7 @@ const ManageTests = () =>{
           renderCell: (params) => {return params.value.length},
           flex: 1,
         },
-        { field: "updated_at", headerName: "Last updated", flex: 1 },
+        { field: "updated_at", headerName: "Last updated", flex: 1 ,renderCell:(params)=>{return <DateProvider date={params.row.updated_at}/>}},
         {
           field: "edit",
           headerName: "",

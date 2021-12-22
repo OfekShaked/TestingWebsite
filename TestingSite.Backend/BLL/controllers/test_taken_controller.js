@@ -117,12 +117,12 @@ const send_mail = (test) => {
 
 const replace_message_templates = (test, message) => {
   //replace Predefined templates with the real data
-  let updatedMessage = message.replace("@TestName@", test.test_id.name);
-  updatedMessage = message.replace("@FirstName@", test.user.name.first);
-  updatedMessage = message.replace("@LastName@", test.user.name.last);
-  updatedMessage = message.replace("@Date@", test.createdAt);
-  updatedMessage = message.replace("@Grade@", test.grade);
-  updatedMessage = message.replace(
+  let updatedMessage = message.replaceAll("@TestName@", test.test_id.name);
+  updatedMessage = message.replaceAll("@FirstName@", test.user.name.first);
+  updatedMessage = message.replaceAll("@LastName@", test.user.name.last);
+  updatedMessage = message.replaceAll("@Date@", test.createdAt);
+  updatedMessage = message.replaceAll("@Grade@", test.grade);
+  updatedMessage = message.replaceAll(
     "@CertificateURL@",
     test.test_id.diploma_url
   );

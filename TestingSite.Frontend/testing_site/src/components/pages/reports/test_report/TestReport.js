@@ -1,24 +1,30 @@
 import React from "react";
-import { Stack, Typography, Grid } from "@mui/material";
+import { Stack, Typography,Divider,Paper,Button, Grid } from "@mui/material";
 import FormField from "../../../common/form_field/FormField";
 import GradesAndAnswers from "./GradesAndAnswers";
 import QuestionStatistics from "./QuestionStatistics";
 import "./TestReport.css";
+import {useNavigate} from "react-router-dom";
 
 const TestReport = (props) => {
   let { report } = props;
+  const navigate = useNavigate();
 
+  const backClick = () =>{
+    navigate("/");
+  }
   return (
     <>
-      <Stack>
+    <Paper className="center-container">
+      <Stack className="center-container">
         <Typography variant="h3" gutterBottom component="div">
           Test Report: {report.summary.name}
         </Typography>
         <Typography variant="h6" gutterBottom component="div">
           Summary
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
+        <Grid container spacing={2} className="center-container">
+          <Grid item xs={12} md={6} className="center-container">
             <Stack spacing={2}>
               <FormField field={"Test name"}>
                 <Typography>{report.summary.name}</Typography>
@@ -37,7 +43,7 @@ const TestReport = (props) => {
               </FormField>
             </Stack>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6} className="center-container">
             <Stack spacing={2}>
               <FormField field={"Date range"}>
                 <Typography>{report.summary.date_range}</Typography>
@@ -70,7 +76,10 @@ const TestReport = (props) => {
             <QuestionStatistics questions={report.question_statistics} />
           </div>
         </div>
+        <Divider/>
+        <Button variant="contained" onClick={backClick}>Back</Button>
       </Stack>
+      </Paper>
     </>
   );
 };

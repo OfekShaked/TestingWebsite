@@ -1,11 +1,13 @@
 import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
-import { Stack, Typography, Grid } from "@mui/material";
+import { Stack,Paper, Typography, Grid } from "@mui/material";
 import FormField from "../../../common/form_field/FormField";
 import { useParams } from "react-router-dom";
 import QuestionsTable from "./questions_table/QuestionsTable";
 import {logError} from '../../../../services/logger';
 import {ErrorNotificationContext} from '../../../../contexts/ErrorNotificationContext';
+import DateProvider from "../../../common/date_provider/DateProvider";
+import './StudentTestReport.css'
 
 const StudentTestReport = (props) => {
   const [report, setReport] = useState(null);
@@ -33,7 +35,8 @@ const StudentTestReport = (props) => {
   return (
     <>
       {report != null ? (
-        <Stack>
+        <Paper className="center-container">
+        <Stack className="center-container">
           <Typography variant="h3" gutterBottom component="div">
             Test Report: {report.summary.name}
           </Typography>
@@ -46,8 +49,8 @@ const StudentTestReport = (props) => {
           <Typography variant="h6" gutterBottom component="div">
             Summary
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid container spacing={2} >
+            <Grid item xs={12} md={6} className="center-container">
               <Stack spacing={2}>
                 <FormField field={"Test name"}>
                   <Typography>{report.summary.name}</Typography>
@@ -67,10 +70,10 @@ const StudentTestReport = (props) => {
                 </FormField>
               </Stack>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6} className="center-container">
               <Stack spacing={2}>
                 <FormField field={"Last submitted"}>
-                  <Typography>{report.summary.last_submitted}</Typography>
+                  <Typography><DateProvider date={report.summary.last_submitted}/></Typography>
                 </FormField>
                 <FormField field={"Test ID"}>
                   <Typography>{report.summary.id}</Typography>
@@ -93,6 +96,7 @@ const StudentTestReport = (props) => {
           </Grid>
           <QuestionsTable rows={report.questions} />
         </Stack>
+        </Paper>
       ) : (
         <></>
       )}

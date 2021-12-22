@@ -5,7 +5,7 @@ import "./CommonTable.css";
 
 const CommonTable = (props) => {
   return (
-    <Paper className="table-background" style={{display:'flex',height:'100%'}}>
+    <Paper className="table-background">
       <DataGrid
         className={"table-height"}
         rows={props.rows}

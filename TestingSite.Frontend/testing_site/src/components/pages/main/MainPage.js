@@ -27,6 +27,10 @@ const MainPage = () => {
     topicContext.setTopic(topics.find((top) => top._id === event.target.value));
   };
 
+  const isTopicEmpty = () =>{
+    return topic==="";
+  }
+
   useEffect(() => {
     const asyncHandler = async () => {
       let topics = await getTopics();
@@ -36,8 +40,11 @@ const MainPage = () => {
     };
     asyncHandler();
   }, []);
+
+
   return (
     <Paper className="centerize">
+      <Typography variant="h6" className="title-instructions">Choose topic before starting</Typography>
       <FormControl fullWidth variant="filled">
         <InputLabel id="topic-select-label">Choose a field of study</InputLabel>
         <Select
@@ -59,19 +66,19 @@ const MainPage = () => {
       </FormControl>
       <Paper>
         <MenuList>
-          <MenuItem component={Link} to="/questions/manage">
+          <MenuItem disabled={isTopicEmpty()} component={Link} to="/questions/manage">
             <Typography className="center-typography">
               Manage questions {">>"}
             </Typography>
           </MenuItem>
           <Divider />
-          <MenuItem component={Link} to="/tests/manage">
+          <MenuItem disabled={isTopicEmpty()} component={Link} to="/tests/manage">
             <Typography className="center-typography">
               Manage tests {">>"}
             </Typography>
           </MenuItem>
           <Divider />
-          <MenuItem component={Link} to="/report">
+          <MenuItem disabled={isTopicEmpty()} component={Link} to="/report">
             <Typography className="center-typography">
               Reports {">>"}
             </Typography>

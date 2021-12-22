@@ -3,9 +3,14 @@
 }
 .question-stats{
     display: flex;
-    height: 30vh;
+    height: auto;
 }
 .grades-answers{
     display: flex;
     height: 40vh;
+}
+.center-container{
+    display:flex;
+    width:100vw;
+    padding-left:20px;
 }

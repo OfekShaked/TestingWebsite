@@ -5,3 +5,9 @@
     flex-grow:1;
     text-align:center;
 }
+
+.title-instructions{
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

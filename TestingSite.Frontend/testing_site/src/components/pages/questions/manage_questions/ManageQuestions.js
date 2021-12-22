@@ -13,6 +13,7 @@ import useModal from "../../../../hooks/useModal/useModal";
 import { useNavigate } from "react-router-dom";
 import { ErrorNotificationContext } from "../../../../contexts/ErrorNotificationContext";
 import { logError } from "../../../../services/logger";
+import DateProvider from "../../../common/date_provider/DateProvider";
 
 const ManageQuestions = () => {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ const ManageQuestions = () => {
       },
       flex: 1,
     },
-    { field: "updated_at", headerName: "Last updated", flex: 1 },
+    { field: "updated_at", headerName: "Last updated", flex: 1 ,renderCell:(params)=>{return <DateProvider date={params.row.updated_at}/>}},
     { field: "type", headerName: "Question Type", flex: 1 },
     { field: "number_of_tests", headerName: "# of tests", flex: 1 },
     {

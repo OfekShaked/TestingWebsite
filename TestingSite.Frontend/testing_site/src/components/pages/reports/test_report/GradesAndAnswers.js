@@ -39,7 +39,7 @@ const GradesAndAnswers = (props) => {
       renderCell: (params) => {
         return (
           <ActionButton onClick={() => openTestReport(params.row._id)}>
-            Go
+            Show
           </ActionButton>
         );
       },

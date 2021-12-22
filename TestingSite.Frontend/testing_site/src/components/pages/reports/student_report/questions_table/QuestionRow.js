@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {KeyboardArrowUp,KeyboardArrowDown} from '@mui/icons-material';
 import Answer from './Answer';
 import { Check,Clear} from '@mui/icons-material';
+import DateProvider from "../../../../common/date_provider/DateProvider"
 
 
 const QuestionRow = (props) => {
@@ -24,7 +25,7 @@ const QuestionRow = (props) => {
         <TableCell align="right">{row.id}</TableCell>
         <TableCell align="right">{JSON.parse(row.name).blocks[0].text}</TableCell>
         <TableCell align="right">{row.is_correct?<Check/>:<Clear/>}</TableCell>
-        <TableCell align="right">{row.last_modified}</TableCell>
+        <TableCell align="right"><DateProvider date={row.last_modified}/></TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

@@ -1,6 +1,7 @@
 .table-background{
     height:100%;
     width:100%;
+    display:flex;
 }
 .table-height{
     height:100vh;
